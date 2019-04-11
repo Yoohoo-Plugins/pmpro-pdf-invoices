@@ -9,6 +9,8 @@ function pmpro_pdf_invoice_settings_page() {
 	$status  = get_option( 'pmpro_pdf_invoice_license_status' );
 	$expires = get_option( 'pmpro_pdf_invoice_license_expires' );
 
+	$expired = false;
+
 	if ( empty( 'license' ) ) {
 		pmpro_pdf_admin_notice( 'If you are running PMPro PDF Invoices on a live site, we recommend an annual support license. <a href="https://yoohooplugins.com/plugins/zapier-integration/" target="_blank" rel="noopener">More Info</a>', 'warning' );
 	}
@@ -18,6 +20,8 @@ function pmpro_pdf_invoice_settings_page() {
 		if ( $expired ) {
 			pmpro_pdf_admin_notice( 'Your license key has expired. We recommend in renewing your annual support license to continue to get automatic updates and premium support. <a href="https://yoohooplugins.com/plugins/zapier-integration/" target="_blank" rel="noopener">More Info</a>', 'warning' );
 			$expires = "Your license key has expired.";
+		} else {
+			$expired = false;
 		}
 	}
 	

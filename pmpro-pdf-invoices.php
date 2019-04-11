@@ -72,16 +72,24 @@ include( PMPRO_PDF_DIR . '/includes/dompdf/autoload.inc.php' );
 function pmpropdf_attach_pdf_email( $attachments, $email ) {
 
 	// let's not send it to admins and only with checkout emails.
-	if( strpos($email->template, "checkout_") !== false && strpos($email->template, "admin") !== false ) {
+	if ( strpos( $email->template, "checkout_" ) !== false && strpos( $email->template, "admin" ) !== false ) {
 		return $attachments;
 	}
 
 	$user = get_user_by( "email", $email->data['user_email'] );
 
 	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
-	
-	$body = file_get_contents( PMPRO_PDF_DIR . '/templates/order.html' );
 
+
+	$custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
+
+	if ( file_exists( $custom_dir ) ) {
+		$body = file_get_contents( $custom_dir );
+	} else {
+		$body = file_get_contents( PMPRO_PDF_DIR . '/templates/order.html' );
+
+	}
+	
 	// items to replace.
 	$replace = array( "{{invoice_code}}", "{{user_email}}", '{{membership_level}}', '{{billing_address}}', "{{payment_method}}", "{{total}}", "{{site}}", "{{site_url}}", "{{subtotal}}", "{{tax}}", "{{ID}}", "{{invoice_date}}" );
 
