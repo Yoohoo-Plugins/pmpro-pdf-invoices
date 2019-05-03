@@ -5,6 +5,15 @@
  */
 
 function pmpro_pdf_invoice_settings_page() {
+
+	wp_enqueue_style('pmrpopdf-settings-styles', plugin_dir_url(__FILE__) . '/css/settings-styles.css');
+
+	wp_enqueue_media();
+	wp_enqueue_script('pmrpropdf-settins-scripts', plugin_dir_url(__FILE__) . '/js/settings-scripts.js' , array('jquery'));
+	wp_localize_script( 'pmrpropdf-settins-scripts', 'pmpropdf_js', array(
+		'ajax_url' => admin_url( 'admin-ajax.php' )
+	));
+
 	$license = get_option( 'pmpro_pdf_invoice_license_key' );
 	$status  = get_option( 'pmpro_pdf_invoice_license_status' );
 	$expires = get_option( 'pmpro_pdf_invoice_license_expires' );
@@ -24,7 +33,7 @@ function pmpro_pdf_invoice_settings_page() {
 			$expired = false;
 		}
 	}
-	
+
 	// Check on Submit and update license server.
 	if ( isset( $_REQUEST['submit'] ) ) {
 		if ( isset( $_REQUEST['pmpro_pdf_invoice_license_key' ] ) && !empty( $_REQUEST['pmpro_pdf_invoice_license_key'] ) ) {
@@ -67,7 +76,7 @@ function pmpro_pdf_invoice_settings_page() {
 
 		update_option( 'pmpro_pdf_invoice_license_status', $status );
 		update_option( 'pmpro_pdf_invoice_license_expires', $expires );
-		
+
 
 		if( $license_data->success != false ) {
 			pmpro_pdf_admin_notice( 'License successfully activated.', 'success is-dismissible' );
@@ -95,62 +104,125 @@ function pmpro_pdf_invoice_settings_page() {
 		$status = false;
 		pmpro_pdf_admin_notice( 'Deactivated license successfully.', 'success is-dismissible' );
 	}
-	
+
+
 }
+
+//General Settings Save
+
+if(isset($_POST['pmpropdf_save_settings'])){
+	$logo_url = !empty($_POST['logo_url']) ? strip_tags($_POST['logo_url']) : '';
+	update_option(PMPRO_PDF_LOGO_URL, $logo_url);
+}
+
+$logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 ?>
 	<div class="wrap">
-		<h2><?php _e('PMPro PDF Invoices License Options'); ?></h2>
-		<form method="post" action="">
+		<h2><?php _e('PMPro PDF Invoices Options'); ?></h2>
 
-			<table class="form-table">
-				<tbody>
-					<tr valign="top">
-						<th scope="row" valign="top">
-							<?php _e('License Key'); ?>
-						</th>
-						<td>
-							<input id="pmpro_pdf_invoice_license_key" name="pmpro_pdf_invoice_license_key" type="text" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
-							<label class="description" for="pmpro_pdf_invoice_license_key"><?php _e('Enter your license key.'); ?></label><br/>
-						</td>
-					</tr>
+		<div class='pmpropdf_option_tabs'>
+			<div class='pmpropdf_tab active' data-tab='0'>License</div>
+			<div class='pmpropdf_tab' data-tab='1'>Tools</div>
+			<div class='pmpropdf_tab' data-tab='2'>Settings</div>
+		</div>
 
-					<tr>
-						<th scope="row" valign="top">
-							<?php _e( 'License Status' ); ?>
-						</th>
-						<td>
-							<?php 
-							if ( false !== $status && $status == 'valid' ) {
-								if ( ! $expired ) { ?>
-									<span style="color:green"><strong><?php _e( 'Active.' ); ?></strong></span>
-								<?php } else { ?>
-									<span style="color:red"><strong><?php _e( 'Expired.' ); ?></strong></span>
-								<?php } ?>
+		<div class='wp-editor-container pmpropdf_option_section visible' data-tab='0'>
+			<form method="post" action="">
 
-								 <?php if ( ! $expired ) { _e( sprintf( 'Expires on %s', $expires ) ); } } ?>
-						</td>
-					</tr>
-					<?php if( ! empty( $license ) || false != $license ) { ?>
+				<table class="form-table">
+					<tbody>
 						<tr valign="top">
 							<th scope="row" valign="top">
-								<?php _e('Activate License'); ?>
+								<?php _e('License Key'); ?>
 							</th>
 							<td>
-								<?php if ( $status !== false && $status == 'valid' ) { ?>
-									<?php wp_nonce_field( 'pmpro_pdf_license_nonce', 'pmpro_pdf_license_nonce' ); ?>
-									<input type="submit" class="button-secondary" style="color:red;" name="deactivate_license" value="<?php _e('Deactivate License'); ?>"/><br/><br/>
-									<?php } else {
-									wp_nonce_field( 'pmpro_pdf_license_nonce', 'pmpro_pdf_license_nonce' ); ?>
-									<input type="submit" class="button-secondary" name="activate_license" value="<?php _e('Activate License'); ?>" <?php if ( isset( $expired ) && $expired ) { echo 'disabled'; } ?>>
-								<?php } ?>
+								<input id="pmpro_pdf_invoice_license_key" name="pmpro_pdf_invoice_license_key" type="text" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
+								<label class="description" for="pmpro_pdf_invoice_license_key"><?php _e('Enter your license key.'); ?></label><br/>
 							</td>
 						</tr>
-					<?php } ?>
-				</tbody>
-			</table>
-			<?php submit_button(); ?>
 
-		</form>
+						<tr>
+							<th scope="row" valign="top">
+								<?php _e( 'License Status' ); ?>
+							</th>
+							<td>
+								<?php
+								if ( false !== $status && $status == 'valid' ) {
+									if ( ! $expired ) { ?>
+										<span style="color:green"><strong><?php _e( 'Active.' ); ?></strong></span>
+									<?php } else { ?>
+										<span style="color:red"><strong><?php _e( 'Expired.' ); ?></strong></span>
+									<?php } ?>
+
+									 <?php if ( ! $expired ) { _e( sprintf( 'Expires on %s', $expires ) ); } } ?>
+							</td>
+						</tr>
+						<?php if( ! empty( $license ) || false != $license ) { ?>
+							<tr valign="top">
+								<th scope="row" valign="top">
+									<?php _e('Activate License'); ?>
+								</th>
+								<td>
+									<?php if ( $status !== false && $status == 'valid' ) { ?>
+										<?php wp_nonce_field( 'pmpro_pdf_license_nonce', 'pmpro_pdf_license_nonce' ); ?>
+										<input type="submit" class="button-secondary" style="color:red;" name="deactivate_license" value="<?php _e('Deactivate License'); ?>"/><br/><br/>
+										<?php } else {
+										wp_nonce_field( 'pmpro_pdf_license_nonce', 'pmpro_pdf_license_nonce' ); ?>
+										<input type="submit" class="button-secondary" name="activate_license" value="<?php _e('Activate License'); ?>" <?php if ( isset( $expired ) && $expired ) { echo 'disabled'; } ?>>
+									<?php } ?>
+								</td>
+							</tr>
+						<?php } ?>
+					</tbody>
+				</table>
+				<?php submit_button(); ?>
+
+				</form>
+			</div>
+
+			<div class='wp-editor-container pmpropdf_option_section' data-tab='1'>
+				<strong>Generate Missing Invoices</strong>
+				<div class='missing_invoice_log'>
+					<div class='item'>No output data yet...</div>
+				</div>
+				<small><em>Please leave this window open while processing</em></small>
+				<br><br>
+				<button class='button generate_missing_logs'>Generate</button>
+			</div>
+
+			<div class='wp-editor-container pmpropdf_option_section' data-tab='2'>
+				<form method="POST" style='width: 45%; display: inline-block; vertical-align: top'>
+					<strong>Invoice Logo</strong>
+					<br>
+					<div class='logo_holder'>
+						<?php if(!empty($logo_url)) {
+							?>
+								<img src="<?php echo strip_tags($logo_url); ?>" alt="" style="max-width:150px;"/>
+							<?php
+						} else {
+							?>
+								<em>No Logo Selected</em>
+							<?php
+						} ?>
+					</div>
+					<button class='button pmpropdf_logo_upload'>Select Image</button>
+					<?php if(!empty($logo_url)){
+						?>
+							<button class='button pmpropdf_logo_remove'>Remove</button>
+						<?php
+					} ?>
+
+					<br><br>
+
+					<input id='logo_url' name='logo_url' type='hidden' value='<?php echo $logo_url; ?>' />
+
+					<input type='submit' class='button button-primary' name='pmpropdf_save_settings' value='Save Settings'>
+				</form>
+
+
+
+			</div>
+	</div>
 
 <?php
 
@@ -164,7 +236,7 @@ function pmpro_pdf_admin_notice( $message, $status ) {
 }
 function pmpro_pdf_license_expires( $expiry_date ) {
 	$today = date( 'Y-m-d H:i:s' );
- 
+
 	if ( $expiry_date < $today ) {
 		$r = true;
 	} else {
