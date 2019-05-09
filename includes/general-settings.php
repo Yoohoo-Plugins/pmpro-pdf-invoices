@@ -6,6 +6,11 @@
 
 function pmpro_pdf_invoice_settings_page() {
 
+	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'template_editor'){
+		pmpro_pdf_template_editor_page();
+		return false;
+	}
+
 	wp_enqueue_style('pmrpopdf-settings-styles', plugin_dir_url(__FILE__) . '/css/settings-styles.css');
 
 	wp_enqueue_media();
@@ -181,6 +186,24 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='1'>
+				<strong>Template Editor</strong>
+				<br>
+
+				<?php
+				$template_notice = 'It appears you do not have a custom template set up.';
+				$template_button = 'Create Template';
+				$custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
+    			if(file_exists($custom_dir)){
+    				$template_notice = 'You are using a custom template.';
+    				$template_button = 'Edit Template';
+    			}
+    			?>
+				<small><?php echo $template_notice; ?></small>
+
+				<br><br>
+				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=template_editor'><?php echo $template_button; ?></a>
+
+				<br><br>
 				<strong>Generate Missing Invoices</strong>
 				<div class='missing_invoice_log'>
 					<div class='item'>No output data yet...</div>

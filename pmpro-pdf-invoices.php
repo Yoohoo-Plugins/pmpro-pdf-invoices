@@ -41,6 +41,9 @@ define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
 
+// Include the template editor page/functions
+include PMPRO_PDF_DIR . '/includes/template-editor.php';
+
 // Include license settings page.
 include PMPRO_PDF_DIR . '/includes/general-settings.php';
 
@@ -187,6 +190,16 @@ function pmpropdf_generate_pdf($order_data){
 
 	// Setup PDF Structure
 	$body = str_replace( $replace, $values, $body );
+
+	//Additional replacements - Developer hook to add custom variable parse
+	//Should use key-value pair array (assoc)
+	$custom_replacements = apply_filters('pmpro_pdf_invoice_custom_variable_hook', array());
+	if(count($custom_replacements) > 0){
+		foreach ($custom_replacements as $key => $value) {
+			$body = str_replace($key, $value, $body);
+		}
+	}
+
 	$dompdf->loadHtml( $body );
 	$dompdf->render();
 	$output = $dompdf->output();
@@ -280,7 +293,7 @@ function pmpropdf_get_order_batch($batch_size = 100, $batch_no = 0){
 	global $wpdb;
 
 	$offset = $batch_no * $batch_size;
-	$batch_sql = "SELECT * FROM $wpdb->pmpro_membership_orders WHERE status NOT IN('cancelled') ORDER BY timestamp ASC LIMIT $batch_size OFFSET $offset";
+	$batch_sql = "SELECT * FROM $wpdb->pmpro_membership_orders ORDER BY timestamp ASC LIMIT $batch_size OFFSET $offset";
 	$batch = $wpdb->get_results($batch_sql);
 
 	return $batch;

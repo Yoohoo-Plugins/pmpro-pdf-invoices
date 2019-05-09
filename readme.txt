@@ -26,6 +26,10 @@ Yes the PDF templates are customizable and use general HTML code with custom tag
 
 == Changelog ==
 = 1.1 =
+Added custom template editor/creator using GrapeJS
+Added custom shortcode components for template editor
+Added custom shortcode extended hook
+Changed Batch processor to process all orders, regardless of status
 Added ability to set invoice logo
 Added ability to batch process missing invoices via AJAX
 Added tools area to settings
