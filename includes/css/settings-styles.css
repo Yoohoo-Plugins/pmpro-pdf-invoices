@@ -1,0 +1,43 @@
+.pmpropdf_option_tabs .pmpropdf_tab {
+    display:inline-block;
+    background: #f7f7f7;
+    padding: 5px 10px;
+    border: 1px solid #dcdcdc;
+    border-bottom: none;
+    cursor: pointer;
+}
+
+.pmpropdf_option_tabs .pmpropdf_tab.active{
+    background: #fff;
+    font-weight: 600;
+}
+
+.pmpropdf_option_section{
+    padding: 10px;
+    display: none;
+}
+
+.pmpropdf_option_section.visible{
+    display: block;
+}
+
+.missing_invoice_log{
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #eee;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    max-width: 300px;
+    border-radius: 2px;
+}
+
+.missing_invoice_log .item{
+    font-size: 11px;
+    color: #696969;
+}
+
+.logo_holder {
+    font-size: 11px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
