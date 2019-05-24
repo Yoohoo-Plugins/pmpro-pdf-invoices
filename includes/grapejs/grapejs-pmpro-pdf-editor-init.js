@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       storeComponents: 0
     },
     assetManager: {
-      upload: false,
+      upload: 0,
     },
     protectedCss: `h1, p, table {
                       font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
