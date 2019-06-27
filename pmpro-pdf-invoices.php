@@ -7,7 +7,7 @@
  * Author URI: https://yoohooplugins.com
  * Version: 1.1
  * License: GPL2 or later
- * Tested up to: 5.0
+ * Tested up to: 5.2.2
  * Requires PHP: 5.6
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: pmpro-pdf-invoices
@@ -46,6 +46,15 @@ include PMPRO_PDF_DIR . '/includes/template-editor.php';
 
 // Include license settings page.
 include PMPRO_PDF_DIR . '/includes/general-settings.php';
+
+function pmpropdf_init() {
+	if ( isset( $_REQUEST['pmpropdf'] ) ) {
+		// Include other files.
+		include PMPRO_PDF_DIR . '/includes/download-pdf.php';
+	}
+}
+add_action( 'init', 'pmpropdf_init' );
+
 
 function pmpropdf_settings_page() {
 	add_options_page( 'Paid Memberships Pro PDF Invoice License Settings', 'PMPro PDF Invoice', 'manage_options', 'pmpro_pdf_invoices_license_key', 'pmpro_pdf_invoice_settings_page' );
@@ -224,11 +233,9 @@ function pmpropdf_admin_column_header( $order_id ) {
 add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
 
 function pmpropdf_admin_column_body( $order ) {
-
-	$download_url = pmpropdf_get_invoice_directory_or_url(true) . pmpropdf_generate_invoice_name($order->code);
-
+	
 	if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($order->code) ) ){
-	echo '<td><a href="' . esc_url( $download_url ). '" target="_blank">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
+	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
 	} else {
 		echo '<td> - </td>';
 	}
@@ -346,3 +353,27 @@ function pmpropdf_batch_processor() {
 	die();
 }
 add_action( 'wp_ajax_pmpropdf_batch_processor', 'pmpropdf_batch_processor' );
+
+
+/**
+ * Download PDF invoice.
+ * @since 1.2
+ */
+function pmpropdf_download_invoice( $order_code ) {
+
+	if( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name( $order_code ) ) ) {
+		$download_url = esc_url( pmpropdf_get_invoice_directory_or_url( true ) . pmpropdf_generate_invoice_name( $order_code ) );
+
+		header( 'Content-Description: File Transfer' );
+		header( 'Content-Type: application/octet-stream' );
+		header( 'Content-Disposition: attachment; filename="'.basename( $download_url ).'"' );
+		header( 'Expires: 0' );
+		header( 'Cache-Control: must-revalidate' );
+		header( 'Pragma: public' );
+		header( 'Content-Length: ' . filesize( $download_url ) );
+		flush(); // Flush system output buffer
+		readfile( $download_url );
+		exit;
+	  }
+
+}
