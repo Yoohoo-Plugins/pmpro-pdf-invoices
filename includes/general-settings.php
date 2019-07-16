@@ -11,6 +11,20 @@ function pmpro_pdf_invoice_settings_page() {
 		return false;
 	}
 
+	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'reset_template'){
+		$custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
+    	if(file_exists($custom_dir)){
+			unlink($custom_dir);
+			pmpro_pdf_admin_notice( 'Template file reset.', 'success is-dismissible' );
+		}
+	}
+
+	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'regen_rewrites'){
+		pmpropdf_remove_rewrite_for_regen();
+		pmpro_pdf_admin_notice( 'Regenerated rewrite file.', 'success is-dismissible' );
+	}
+
+
 	wp_enqueue_style('pmrpopdf-settings-styles', plugin_dir_url(__FILE__) . '/css/settings-styles.css');
 
 	wp_enqueue_media();
@@ -129,6 +143,7 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 			<div class='pmpropdf_tab active' data-tab='0'>License</div>
 			<div class='pmpropdf_tab' data-tab='1'>Tools</div>
 			<div class='pmpropdf_tab' data-tab='2'>Settings</div>
+			<div class='pmpropdf_tab' data-tab='3'>Info</div>
 		</div>
 
 		<div class='wp-editor-container pmpropdf_option_section visible' data-tab='0'>
@@ -203,6 +218,10 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 				<br><br>
 				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=template_editor'><?php echo $template_button; ?></a>
 
+				<?php if(file_exists($custom_dir)){ ?>
+					<a class='button reset_template_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=reset_template'>Reset Template</a>
+				<?php } ?>
+
 				<br><br>
 				<strong>Generate Missing Invoices</strong>
 				<div class='missing_invoice_log'>
@@ -241,9 +260,23 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 
 					<input type='submit' class='button button-primary' name='pmpropdf_save_settings' value='Save Settings'>
 				</form>
+			</div>
 
-
-
+			<div class='wp-editor-container pmpropdf_option_section' data-tab='3'>
+				<strong>Invoice Rewrite Status</strong><br>
+				<?php
+				if(pmpropdf_check_rewrite_active()){
+					echo "<em class='rewrite_badge active'>Active</em> Invoices cannot be accessed directly.";
+				} else {
+					echo "<em class='rewrite_badge inactive'>Inactive</em> Invoice are not secured and can be accessed directly.";
+				}
+				?>
+				<br><br>
+				<strong>Regenerate Invoice Rewrites</strong><br>
+				<small>Use this tool to regenerate the rewrite file</small>
+				<br><br>
+				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=regen_rewrites'>Regenerate Rewrite File</a> <br>
+				<br>
 			</div>
 	</div>
 

@@ -31,6 +31,17 @@ jQuery(function(){
         jQuery('.logo_holder').html('');
         jQuery('#logo_url').val('');
     });
+
+    jQuery('.reset_template_btn').on('click', function(e){
+        e.preventDefault();
+        var url = jQuery(this).attr('href');
+
+        var continuePrompt = confirm("This cannot be undone, current template will be deleted.\n\nAre you sure you would like to continue? ");
+
+        if (continuePrompt == true) {
+            window.location = url;
+        }
+    });
 });
 
 function pmpropdf_ajax_batch_loop(batch_size, batch_no){

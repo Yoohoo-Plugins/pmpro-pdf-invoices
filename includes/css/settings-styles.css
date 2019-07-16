@@ -41,3 +41,22 @@
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+.rewrite_badge{
+    padding: 2px 5px;
+    margin-right: 5px;
+    border-radius: 5px;
+    display:inline-block;
+    margin-top: 5px;
+    font-size: 11px;
+}
+
+.rewrite_badge.active{
+    background: #0073aa;
+    color: #fff;
+}
+
+.rewrite_badge.inactive{
+    background: #aa0000;
+    color: #fff;
+}

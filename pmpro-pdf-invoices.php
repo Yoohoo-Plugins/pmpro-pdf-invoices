@@ -40,6 +40,7 @@ define( 'PMPRO_PDF_VERSION', '1.0' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
+define( 'PMPRO_PDF_REWRITE_TOKEN', 'PMPRO_PDF_REWRITE_TOKEN');
 
 // Include the template editor page/functions
 include PMPRO_PDF_DIR . '/includes/template-editor.php';
@@ -51,6 +52,11 @@ function pmpropdf_init() {
 	if ( isset( $_REQUEST['pmpropdf'] ) ) {
 		// Include other files.
 		include PMPRO_PDF_DIR . '/includes/download-pdf.php';
+	}
+
+	/** Check if the strict redirect is in place*/
+	if(pmpropdf_check_rewrite_active()){
+		//Silence in this case
 	}
 }
 add_action( 'init', 'pmpropdf_init' );
@@ -233,7 +239,7 @@ function pmpropdf_admin_column_header( $order_id ) {
 add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
 
 function pmpropdf_admin_column_body( $order ) {
-	
+
 	if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($order->code) ) ){
 	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
 	} else {
@@ -362,18 +368,92 @@ add_action( 'wp_ajax_pmpropdf_batch_processor', 'pmpropdf_batch_processor' );
 function pmpropdf_download_invoice( $order_code ) {
 
 	if( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name( $order_code ) ) ) {
-		$download_url = esc_url( pmpropdf_get_invoice_directory_or_url( true ) . pmpropdf_generate_invoice_name( $order_code ) );
+		$invoice_name = pmpropdf_generate_invoice_name( $order_code );
+		$download_url = esc_url( pmpropdf_get_invoice_directory_or_url( true ) . $invoice_name );
+		$access_key = pmpropdf_get_rewrite_token();
 
-		header( 'Content-Description: File Transfer' );
-		header( 'Content-Type: application/octet-stream' );
-		header( 'Content-Disposition: attachment; filename="'.basename( $download_url ).'"' );
-		header( 'Expires: 0' );
-		header( 'Cache-Control: must-revalidate' );
-		header( 'Pragma: public' );
-		header( 'Content-Length: ' . filesize( $download_url ) );
-		flush(); // Flush system output buffer
-		readfile( $download_url );
+		$download_url .= "?access=$access_key";
+
+		header("Location: " . $download_url);
+
+		/**
+		 * This is removed to support the force htaccess redirect
+		 * Auto download is now automatically handled in the htaccess file
+		 *
+		 * -------------
+		 * header( 'Content-Description: File Transfer' );
+		 * header( 'Content-Type: application/octet-stream' );
+		 * header( 'Content-Disposition: attachment; filename="'.basename( $invoice_name ).'"' );
+		 * header( 'Expires: 0' );
+		 * header( 'Cache-Control: must-revalidate' );
+		 * header( 'Pragma: public' );
+		 * header( 'Content-Length: ' . filesize( $download_url ) );
+		 * flush(); // Flush system output buffer
+		 * readfile( $download_url );
+		 * -------------
+		*/
+
 		exit;
 	  }
 
+}
+
+/**
+ * Check if the rewrite .htaccess file is in place
+ * If not, create it.
+*/
+function pmpropdf_check_rewrite_active(){
+	$invoice_dir = pmpropdf_get_invoice_directory_or_url();
+	$htaccess_location = $invoice_dir . ".htaccess";
+	if(!file_exists($htaccess_location)){
+		try{
+			$access_key = pmpropdf_get_rewrite_token();
+			$server_ip = $_SERVER['REMOTE_ADDR'];
+			$htaccess = fopen($htaccess_location, "w");
+
+			$content = "<IfModule mod_rewrite.c>\n";
+ 			$content .= "RewriteEngine On\n";
+ 			$content .= "RewriteCond %{QUERY_STRING} !access=$access_key\n";
+			$content .= "RewriteRule (.*) - [F]\n";
+			$content .= "</IfModule>\n\n";
+
+			$content .= "<FilesMatch \"\.(pdf)$\">\n";
+			$content .= "ForceType application/octet-stream\n";
+			$content .= "Header set Content-Disposition attachment\n";
+			$content .= "</FilesMatch>";
+
+			fwrite($htaccess, $content);
+			fclose($htaccess);
+
+			return true;
+		} catch (Exception $e){
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * Unlinks/deletes the current rewrite .htaccess files
+ * This will then be regenerated in the next loop
+*/
+function pmpropdf_remove_rewrite_for_regen(){
+	$invoice_dir = pmpropdf_get_invoice_directory_or_url();
+	$htaccess_location = $invoice_dir . ".htaccess";
+	if(file_exists($htaccess_location)){
+		unlink($htaccess_location);
+	}
+}
+
+/**
+ * Get the rewrite access token
+*/
+function pmpropdf_get_rewrite_token(){
+	$access_token = get_option(PMPRO_PDF_REWRITE_TOKEN);
+	if($access_token === false){
+		$access_token = bin2hex(openssl_random_pseudo_bytes(16));
+		update_option(PMPRO_PDF_REWRITE_TOKEN, $access_token);
+	}
+
+	return $access_token;
 }
