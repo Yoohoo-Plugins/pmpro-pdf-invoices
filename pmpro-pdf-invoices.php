@@ -100,13 +100,14 @@ function pmpropdf_attach_pdf_email( $attachments, $email ) {
 		return $attachments;
 	}
 
-	// @Deprecated: Not reliable for all use cases
-	// Get the user and their last order
-	//$user = get_user_by( "email", $user_email );
-	//$last_order = pmpropdf_get_last_order( $user->ID );
-
-	$order_code = $email->data['order_code'];
-	$last_order = pmpropdf_get_order_by_code($order_code);
+	// Make sure there is an order code available, otherwise get it from the user.
+	if ( empty( $email->data['order_code'] ) ) {
+		$user = get_user_by( "email", $email->data['user_email'] );
+		$last_order = pmpropdf_get_last_order( $user->ID );
+	} else {
+		$order_code = $email->data['order_code'];
+		$last_order = pmpropdf_get_order_by_code($order_code);
+	}
 
 	// Bail if order is empty / doesn't exist.
 	// We do this early to avoid initializing the DomPDF library if it is unneeded
