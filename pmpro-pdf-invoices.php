@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.1
+ * Version: 1.2
  * License: GPL2 or later
  * Tested up to: 5.2.2
  * Requires PHP: 5.6
@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) or exit;
  */
 define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 define( 'YH_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.0' );
+define( 'PMPRO_PDF_VERSION', '1.2' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -458,3 +458,58 @@ function pmpropdf_get_rewrite_token(){
 
 	return $access_token;
 }
+
+/**
+ * Shortcode handler for the invoice list based on current user
+*/
+function pmpropdf_download_list_shortcode_handler(){
+	$content = 'Please login to view this content';
+	if(function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
+		global $wpdb, $current_user;
+		$content = "";
+
+		$invoices = $wpdb->get_results("
+			SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
+			FROM $wpdb->pmpro_membership_orders
+			WHERE user_id = '$current_user->ID'
+			AND status NOT
+			IN('review', 'token', 'error')
+			ORDER BY timestamp DESC"
+		);
+
+		if(!empty($invoices)){
+			foreach ($invoices as $key => $invoice) {
+				if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
+					$content .= '<tr>';
+					$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
+					$content .= 	'<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $invoice->code ) ). '">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
+					$content .= '</tr>';
+				}
+			}
+		}
+
+		if(!empty($content)){
+			$table_content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
+			$table_content .= "<table width='100%'' cellpadding='0' cellspacing='0' border='0'>";
+			$table_content .= 	"<thead>";
+			$table_content .= 		"<tr>";
+			$table_content .= 			"<th>" . __("Date", 'pmpro-pdf-invoices' ) . "</th>";
+			$table_content .= 			"<th>" . __("Level", 'pmpro-pdf-invoices' ) . "</th>";
+			$table_content .= 		"</tr>";
+			$table_content .= 	"</thead>";
+			$table_content .= 	"<tbody>";
+			$table_content .= 		$content;
+			$table_content .= 	"</tbody>";
+			$table_content .= "</table>";
+
+			return $table_content;
+
+		} else {
+			$content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
+			$content .= '<div><em>No PDF invoices found...</em></div>';
+		}
+	}
+	return $content;
+
+}
+add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');

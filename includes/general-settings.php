@@ -134,6 +134,24 @@ if(isset($_POST['pmpropdf_save_settings'])){
 	update_option(PMPRO_PDF_LOGO_URL, $logo_url);
 }
 
+if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'insert_account_shortcode'){
+	if(function_exists('pmpro_getOption')){
+		$account_page_id = pmpro_getOption("account_page_id");
+		if($account_page_id !== NULL){
+			$current_post = get_post(intval($account_page_id));
+			$current_content = $current_post->post_content;
+			$update_post = array(
+		      'ID'           => intval($account_page_id),
+		      'post_content' => $current_content . '<br><br>[pmpropdf_download_list]',
+		  	);
+
+  			wp_update_post($update_post);
+
+  			pmpro_pdf_admin_notice( 'Shortcode automatically added to Account Page', 'success is-dismissible' );
+  		}
+  	}
+}
+
 $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 ?>
 	<div class="wrap">
@@ -144,6 +162,7 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 			<div class='pmpropdf_tab' data-tab='1'>Tools</div>
 			<div class='pmpropdf_tab' data-tab='2'>Settings</div>
 			<div class='pmpropdf_tab' data-tab='3'>Info</div>
+			<div class='pmpropdf_tab' data-tab='4'>Shortcode</div>
 		</div>
 
 		<div class='wp-editor-container pmpropdf_option_section visible' data-tab='0'>
@@ -277,6 +296,26 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 				<br><br>
 				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=regen_rewrites'>Regenerate Rewrite File</a> <br>
 				<br>
+			</div>
+
+			<div class='wp-editor-container pmpropdf_option_section' data-tab='4'>
+				<strong>PDF Invoice List</strong><br>
+				<br>
+				<code>[pmpropdf_download_list]</code>
+				<em>This can be placed in a page to allow users to download their PDF Invoices</em>
+
+				<?php
+				if(function_exists('pmpro_getOption')){
+					$account_page_id = pmpro_getOption("account_page_id");
+					if($account_page_id !== NULL){
+						?>
+						<br><br>
+						<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=insert_account_shortcode'>Add to Account Page</a>
+						<br><br><em>Let us automatically add this shortcode to your PMPro Account Page</em>
+						<?php
+					}
+				}
+				?>
 			</div>
 	</div>
 
