@@ -1,12 +1,12 @@
 
 <style type="text/css">
-	
+
 	h1, p, table {
 		font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
 	}
 
 	#invoice{
-		width:700px; 
+		width:700px;
 		text-align:center;
 
 	}
@@ -47,42 +47,43 @@
 	}
 </style>
 
+<div>{{logo_image}}</div>
 <h1>{{site}}</h1>
 
 <table>
 	<tr>
-		<td><strong>Invoice #:</strong> {{invoice_code}}</td>
+		<td><strong>Invoice #:</strong> <span>{{invoice_code}}</span></td>
 	</tr>
 	<tr>
-		<td><strong>Date:</strong> {{invoice_date}}</td>
+		<td><strong>Date:</strong> <span>{{invoice_date}}</span></td>
 	</tr>
 	<tr>
-		<td><strong>Payment Method:</strong> {{payment_method}}</td>
+		<td><strong>Payment Method:</strong> <span>{{payment_method}}</span></td>
 	</tr>
 </table>
 <br/>
 
-{{billing_address}}
+<span>{{billing_address}}</span>
 
 <table id="invoice">
 	<tr id="heading" class="row">
-		<th class="alignleft" colspan="2">Item</th>
-		<th class="alignright"><span class="alignright">Price</span></th>
+		<th class="alignleft" colspan="2"><div>Item</div></th>
+		<th class="alignright"><span class="alignright"><div>Price</div></span></th>
 	</tr>
 	<tr class="row">
-		<td colspan="2" class="alignleft">{{membership_level}}</td>
-		<td class="alignright" style="padding-left:0;">{{total}}</td>
+		<td colspan="2" class="alignleft"><div>{{membership_level}}</div></td>
+		<td class="alignright" style="padding-left:0;"><div>{{total}}</div></td>
 	</tr>
 	<tr  class="alignright row">
-		<th colspan="2">Subtotal</th>
-		<td>{{subtotal}}</td>
+		<th colspan="2"><div>Subtotal</div></th>
+		<td><div>{{subtotal}}</div></td>
 	</tr>
 	<tr class="alignright row">
-		<th colspan="2">Tax</th>
-		<td >{{tax}}</td>
+		<th colspan="2"><div>Tax</div></th>
+		<td ><div>{{tax}}</div></td>
 	</tr>
 	<tr class="alignright row">
-		<th colspan="2">Total</th>
-		<th>{{total}}</th>
+		<th colspan="2"><div>Total</div></th>
+		<th><div>{{total}}</div></th>
 	</tr>
 </table>
