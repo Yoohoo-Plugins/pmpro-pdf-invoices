@@ -24,6 +24,35 @@ function pmpro_pdf_invoice_settings_page() {
 		pmpro_pdf_admin_notice( 'Regenerated rewrite file.', 'success is-dismissible' );
 	}
 
+	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'set_template'){
+		$template_selected = !empty($_GET['template']) ? $_GET['template'] : false;
+		if($template_selected === 'order' || $template_selected === 'corporate'){
+	        try{
+	        	$template_body = file_get_contents( PMPRO_PDF_DIR . '/templates/' . $template_selected . '.html' );
+
+	            if(!file_exists(get_stylesheet_directory() . '/pmpro-pdf-invoices')){
+	                mkdir(get_stylesheet_directory() . '/pmpro-pdf-invoices', 0777, true);
+	            }
+
+	            $custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
+
+	            file_put_contents($custom_dir, pmpro_pdf_temlate_editor_get_forced_css() .  $template_body);
+
+	            ?>
+	            <div class="notice notice-success">
+	                <p><?php _e('Template Saved!'); ?></p>
+	            </div>
+	            <?php
+	        } catch(Exception $ex){
+	            ?>
+	            <div class="update-nag">
+	                <p><?php _e('Could not save Template'); ?></p>
+	            </div>
+	            <?php
+	        }
+		}
+	}
+
 
 	wp_enqueue_style('pmrpopdf-settings-styles', plugin_dir_url(__FILE__) . '/css/settings-styles.css');
 
@@ -142,7 +171,7 @@ if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'insert_account_shortco
 			$current_content = $current_post->post_content;
 			$update_post = array(
 		      'ID'           => intval($account_page_id),
-		      'post_content' => $current_content . '<br><br>[pmpropdf_download_list]',
+		      'post_content' => $current_content . '<br><br>[pmpropdf_download_list] [pmpropdf_download_all_zip]',
 		  	);
 
   			wp_update_post($update_post);
@@ -187,13 +216,25 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 							<td>
 								<?php
 								if ( false !== $status && $status == 'valid' ) {
-									if ( ! $expired ) { ?>
-										<span style="color:green"><strong><?php _e( 'Active.' ); ?></strong></span>
-									<?php } else { ?>
-										<span style="color:red"><strong><?php _e( 'Expired.' ); ?></strong></span>
-									<?php } ?>
+									if ( ! $expired ) {
+										?>
+											<span class='rewrite_badge active'><strong><?php _e( 'Active' ); ?></strong></span>
+										<?php
+									} else {
+										?>
+											<span class='rewrite_badge inactive'><strong><?php _e( 'Expired' ); ?></strong></span>
+										<?php
+									}
 
-									 <?php if ( ! $expired ) { _e( sprintf( 'Expires on %s', $expires ) ); } } ?>
+									if ( ! $expired ) {
+										_e( sprintf( 'Expires on %s', $expires ) );
+									}
+								} else {
+									?>
+										<span class='rewrite_badge unknown'><strong><?php _e( 'Unregistered' ); ?></strong></span>
+									<?php
+								}
+								?>
 							</td>
 						</tr>
 						<?php if( ! empty( $license ) || false != $license ) { ?>
@@ -241,6 +282,8 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 					<a class='button reset_template_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=reset_template'>Reset Template</a>
 				<?php } ?>
 
+				<a class='button select_template_btn' href='#' title="Select a template from our library">Select Template</a>
+
 				<br><br>
 				<strong>Generate Missing Invoices</strong>
 				<div class='missing_invoice_log'>
@@ -282,6 +325,15 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='3'>
+				<strong>ZipArchive Module</strong><br>
+				<?php
+				if(class_exists('ZipArchive')){
+					echo "<em class='rewrite_badge active'>Active</em> Invoices can be archived and downloaded as a ZIP file.";
+				} else {
+					echo "<em class='rewrite_badge inactive'>Inactive</em> ZipArchive module not available, ZIP functionality disabled.";
+				}
+				?>
+				<br><br>
 				<strong>Invoice Rewrite Status</strong><br>
 				<?php
 				if(pmpropdf_check_rewrite_active()){
@@ -301,6 +353,13 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='4'>
 				<strong>PDF Invoice List</strong><br>
 				<br>
+				<code>[pmpropdf_download_all_zip]</code>
+				<em>This can be placed in a page to allow users to download all their invoices as a ZIP file</em>
+				<?php if(!class_exists('ZipArchive')) { ?>
+					<br><br>
+					<code style='color:red'>ZipArchive module not enabled within your server environment. This shortcode will be disabled</code>
+				<?php } ?>
+				<br><br>
 				<code>[pmpropdf_download_list]</code>
 				<em>This can be placed in a page to allow users to download their PDF Invoices</em>
 
@@ -311,12 +370,41 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 						?>
 						<br><br>
 						<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=insert_account_shortcode'>Add to Account Page</a>
-						<br><br><em>Let us automatically add this shortcode to your PMPro Account Page</em>
+						<br><br><em>Let us automatically add these shortcodes to your PMPro Account Page</em>
 						<?php
 					}
 				}
 				?>
 			</div>
+	</div>
+
+	<div class='pmprofpdf_template_selector' style='display: none;'>
+		<div class='inner_panel'>
+			<div class='heading'>
+				<h4>Select Template</h4>
+				<div class='close_btn'>Close</div>
+			</div>
+			<div class='content'>
+				<small>Click on a tile below to apply template to your invoices</small>
+				<br><br>
+				<div class='template_tile' data-template='order'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/default_template.jpg'; ?>' />
+					<div class='hover'>
+						Default Template
+					</div>
+				</div>
+				<div class='template_tile' data-template='corporate'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/corp_template.jpg'; ?>' />
+					<div class='hover'>
+						Corporate Template
+					</div>
+				</div>
+				<br><br>
+			</div>
+			<div class='foot'>
+				<small><strong>Note: </strong>Selecting a bundled theme will override any custom templates you may have setup</small>
+			</div>
+		</div>
 	</div>
 
 <?php

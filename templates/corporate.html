@@ -1,0 +1,122 @@
+
+<style type="text/css">
+
+    h1, h4, p, table {
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #444444;
+    }
+
+    #invoice, table{
+        width:700px;
+    }
+
+    #invoice{
+        text-align:center;
+    }
+
+    #heading{
+        font-size:18px;
+        color:#fff;
+        background:#444444;
+    }
+
+    #heading th{
+        padding:10px;
+        border-radius:2px;
+    }
+
+    #heading tr{
+        margin-bottom:10px;
+    }
+
+    .alignright{
+        text-align: right;
+    }
+
+    .alignleft{
+        text-align:left;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .row{
+        border-bottom:1px solid #eee;
+    }
+
+    .row td, .row th{
+        padding:10px;
+    }
+
+    .row:nth-child(odd){
+        background: #eee;
+    }
+
+    .header {
+        padding: 10px;
+        border-bottom: 2px solid #444;
+        margin-bottom: 40px;
+    }
+
+    .details{
+        width: 700px;
+        margin-bottom: 50px;
+    }
+
+    .details td{
+        vertical-align: top;
+    }
+</style>
+
+<div class='header'>
+    <div>{{logo_image}}</div>
+</div>
+
+<h4>{{site}}</h4>
+
+
+<table class='details'>
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td><strong>Invoice #:</strong> <span>{{invoice_code}}</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Date:</strong> <span>{{invoice_date}}</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Payment Method:</strong> <span>{{payment_method}}</span></td>
+                </tr>
+            </table>
+        </td>
+        <td class="alignright">
+            <span>{{billing_address}}</span>
+        </td>
+    </tr>
+</table>
+
+
+<table id="invoice">
+    <tr id="heading" class="row">
+        <th class="alignleft" colspan="2"><div>Item</div></th>
+        <th class="alignright"><span class="alignright"><div>Price</div></span></th>
+    </tr>
+    <tr class="row">
+        <td colspan="2" class="alignleft"><div>{{membership_level}}</div></td>
+        <td class="alignright" style="padding-left:0;"><div>{{total}}</div></td>
+    </tr>
+    <tr  class="alignright row">
+        <th colspan="2"><div>Subtotal</div></th>
+        <td><div>{{subtotal}}</div></td>
+    </tr>
+    <tr class="alignright row">
+        <th colspan="2"><div>Tax</div></th>
+        <td ><div>{{tax}}</div></td>
+    </tr>
+    <tr class="alignright row">
+        <th colspan="2"><div>Total</div></th>
+        <th><div>{{total}}</div></th>
+    </tr>
+</table>

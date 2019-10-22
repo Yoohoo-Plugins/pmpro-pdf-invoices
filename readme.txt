@@ -25,11 +25,25 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+
+= 1.3 =
+Added check to remove empty tables rows from custom templates as this causes tables to be misplaced within the DomPDF handler
+Added additional placement styles to prevent any divs from being placed where they do not belong
+Added a formatter to the save call to improve the readability of the custom template HTML once it has been saved
+Resolved a bug in DomPDF handler which would cause it to fail when a row does not have a cell present within it
+
 = 1.2 =
 Added a 'pmpropdf_download_list' shortcode which shows a table of invoice dates with download links for the current user
 Added functionality to prevent/block access to download links not owner by the customer from the shortcode
 Added ability to automatically append new shortcode to the PMPro Account Page
 Added Shortcode tab to settings area with controls and descriptions of new functionality
+Added a 'pmpropdf_download_all_zip' shortcode which allows the user to download a ZIP file of all their PDF's
+Added functionality to ZIP the current users PDF's into a temporary archive file depending on request
+Added checks to ensure ZipArchive module is available in the environment, along with visual feedback when it is not available
+Added adbility to select a bundled invoice theme from the settings area
+Added needed functionality to create a template override when a bundled theme is selected
+Added a new 'Corporate' invoice theme and theme selector modal
+Improved license status styling
 
 = 1.1 =
 Added custom template editor/creator using GrapeJS
