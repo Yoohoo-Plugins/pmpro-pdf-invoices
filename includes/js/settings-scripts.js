@@ -42,6 +42,19 @@ jQuery(function(){
             window.location = url;
         }
     });
+
+    jQuery('.select_template_btn').on('click', function(e){
+        jQuery('.pmprofpdf_template_selector').show();
+    });
+
+    jQuery('.pmprofpdf_template_selector .close_btn').on('click', function(e){
+        jQuery('.pmprofpdf_template_selector').hide();
+    });
+
+    jQuery('.template_tile').on('click', function(e){
+        var template = jQuery(this).attr('data-template');
+        window.location = '?page=pmpro_pdf_invoices_license_key&sub_action=set_template&template=' + template;
+    });
 });
 
 function pmpropdf_ajax_batch_loop(batch_size, batch_no){

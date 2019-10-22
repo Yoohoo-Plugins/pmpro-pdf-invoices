@@ -20,10 +20,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
                       font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
                   }
 
-                  #invoice{
+                  #invoice, table{
                       width:700px;
-                      text-align:center;
+                  }
 
+                  #invoice{
+                      text-align:center;
                   }
 
                   #heading{

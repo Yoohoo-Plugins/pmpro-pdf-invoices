@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.2
+ * Version: 1.3
  * License: GPL2 or later
  * Tested up to: 5.2.2
  * Requires PHP: 5.6
@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) or exit;
  */
 define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 define( 'YH_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.2' );
+define( 'PMPRO_PDF_VERSION', '1.3' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -58,6 +58,8 @@ function pmpropdf_init() {
 	if(pmpropdf_check_rewrite_active()){
 		//Silence in this case
 	}
+
+	pmpropdf_check_should_zip();
 }
 add_action( 'init', 'pmpropdf_init' );
 
@@ -144,6 +146,8 @@ function pmpropdf_generate_pdf($order_data){
 		$body = file_get_contents( PMPRO_PDF_DIR . '/templates/order.html' );
 	}
 
+
+
 	// Build the string for billing data.
 	if ( ! empty( $order_data->billing_name ) ) {
 		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
@@ -165,7 +169,9 @@ function pmpropdf_generate_pdf($order_data){
 	$user_level_name = 'Unknown';
 	if(function_exists('pmpro_getMembershipLevelForUser')){
 		$user_level = pmpro_getMembershipLevelForUser($order_data->user_id);
-		$user_level_name = $user_level->name;
+		if(!empty($user_level) && !empty($user_level->name)){
+			$user_level_name = $user_level->name;
+		}
 	}
 
 	$logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
@@ -204,8 +210,11 @@ function pmpropdf_generate_pdf($order_data){
 		$logo_image
 	);
 
+
 	// Setup PDF Structure
 	$body = str_replace( $replace, $values, $body );
+
+
 
 	//Additional replacements - Developer hook to add custom variable parse
 	//Should use key-value pair array (assoc)
@@ -219,7 +228,6 @@ function pmpropdf_generate_pdf($order_data){
 	$dompdf->loadHtml( $body );
 	$dompdf->render();
 	$output = $dompdf->output();
-
 	// Let's write this file to a directory now.
 
 	$invoice_dir = pmpropdf_get_invoice_directory_or_url();
@@ -513,3 +521,83 @@ function pmpropdf_download_list_shortcode_handler(){
 
 }
 add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
+
+
+/**
+ * Shortcode handler for the download all as ZIP file
+*/
+function pmpropdf_download_all_zip_shortcode_handler($atts){
+	$title = __("Download all PDF's as ZIP", 'pmpro-pdf-invoices');
+	if(!empty($atts['title'])){
+		$title = sanitize_text_field($atts['title']);
+	}
+
+	if(class_exists('ZipArchive') && function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
+		global $wpdb, $current_user;
+
+		$invoices = $wpdb->get_results("
+			SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
+			FROM $wpdb->pmpro_membership_orders
+			WHERE user_id = '$current_user->ID'
+			AND status NOT
+			IN('review', 'token', 'error')
+			ORDER BY timestamp DESC"
+		);
+
+		if(!empty($invoices) && count($invoices) > 0){
+			return "<a href='?pmpro_pdf_invoices_action=download_zip' target='_BLANK'>$title</a>";
+		}
+	}
+	return '';
+
+}
+add_shortcode('pmpropdf_download_all_zip', 'pmpropdf_download_all_zip_shortcode_handler');
+
+/**
+ * Checks if we received a request to perform a zip of the current users documents
+ *
+ * If so, this will go ahead and generate that plus download it
+*/
+function pmpropdf_check_should_zip(){
+	if(!empty($_REQUEST['pmpro_pdf_invoices_action']) && $_REQUEST['pmpro_pdf_invoices_action'] === 'download_zip'){
+		if(class_exists('ZipArchive')){
+			if(class_exists('ZipArchive') && function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
+				global $wpdb, $current_user;
+
+				$invoices = $wpdb->get_results("
+					SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
+					FROM $wpdb->pmpro_membership_orders
+					WHERE user_id = '$current_user->ID'
+					AND status NOT
+					IN('review', 'token', 'error')
+					ORDER BY timestamp DESC"
+				);
+
+				if(!empty($invoices) && count($invoices) > 0){
+					$files = array();
+					foreach ($invoices as $key => $invoice) {
+						if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
+							$files[] = pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code);
+						}
+					}
+
+
+					$archive_name = 'invoices_' . time() . '.zip';
+					$archive = new ZipArchive;
+					if($archive->open($archive_name, ZipArchive::CREATE) === TRUE){
+						foreach ($files as $file) {
+							$archive->addFromString(basename($file), file_get_contents($file));
+						}
+						$archive->close();
+
+						/** Send the headers and file data to the browser */
+						header('Content-Type: application/zip');
+						header('Content-disposition: attachment; filename='.$archive_name);
+						header('Content-Length: ' . filesize($archive_name));
+						readfile($archive_name);
+					}
+				}
+			}
+		}
+	}
+}

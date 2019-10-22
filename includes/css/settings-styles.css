@@ -60,3 +60,93 @@
     background: #aa0000;
     color: #fff;
 }
+
+.rewrite_badge.unknown{
+    background: #ddd;
+}
+
+.pmprofpdf_template_selector {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #33333345;
+}
+
+.pmprofpdf_template_selector .inner_panel{
+    background: #fff;
+    width: 70%;
+    margin: auto;
+    margin-top: 150px;
+    padding: 20px;
+    box-shadow: 0 0 2px 2px #33333314;
+}
+
+.pmprofpdf_template_selector .heading{
+    position: relative;
+}
+.pmprofpdf_template_selector .heading h4{
+    margin: 0;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.pmprofpdf_template_selector .heading .close_btn{
+    background: #ddd;
+    position: absolute;
+    height: 20px;
+    top: -40px;
+    right: -20px;
+    padding: 0 5px;
+    font-size: 12px;
+    box-shadow: 0 0 2px 2px #33333314;
+    cursor: pointer;
+}
+
+.pmprofpdf_template_selector .content .template_tile{
+    width: 250px;
+    height: 250px;
+    overflow: hidden;
+    border: 2px solid #ddd;
+    padding: 5px;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin-right: 5px;
+}
+
+.pmprofpdf_template_selector .content .template_tile img{
+    width: 100%;
+    transition: all 1s ease;
+}
+
+.pmprofpdf_template_selector .content .template_tile .hover {
+    opacity: 0;
+    position: absolute;
+    background: #3333335e;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: #fff;
+    font-weight: 600;
+    line-height: 250px;
+    text-align: center;
+    transition: opacity 0.5s ease;
+}
+
+.pmprofpdf_template_selector .content .template_tile:hover {
+    border-color: #525252;
+}
+
+.pmprofpdf_template_selector .content .template_tile:hover img{
+    width: 120%;
+    margin-left:-10%;
+}
+
+.pmprofpdf_template_selector .content .template_tile:hover .hover{
+    opacity: 1;
+}

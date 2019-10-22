@@ -66,6 +66,7 @@ function pmpro_pdf_template_editor_page_html(){
 function pmpro_pdf_template_editor_check_save(){
     if(isset($_POST['template_content'])){
         $html_content = str_replace('\\', '', $_POST['template_content']);
+        $html_content = pmpro_pdf_cleanup_editor_html($html_content);
 
         try{
             if(!file_exists(get_stylesheet_directory() . '/pmpro-pdf-invoices')){
@@ -91,15 +92,47 @@ function pmpro_pdf_template_editor_check_save(){
     }
 }
 
+function pmpro_pdf_cleanup_editor_html($content){
+  /*** TODO: Add more filtering here as needed */
+  $content = pmpro_pdf_remove_empty_rows($content);
+  $content = pmpro_pdf_add_newline_formatting($content);
+  return $content;
+}
+
+/** 
+ * This can be removed, simply reformats the raw order.html doc to make it easier to read
+*/
+function pmpro_pdf_add_newline_formatting($content){
+  $tackon_list = array(
+    '<br/>', '<br>', '</div>', '</tr>', '</td>', '</table>'
+  );
+
+  foreach ($tackon_list as $i => $tackon) {
+    $content = str_replace($tackon, $tackon."\n", $content);
+  }
+
+  return $content;
+}
+
+/**
+ * This function was added as it causes DomPDF to have a fit and not render tables in their correct placement
+*/
+function pmpro_pdf_remove_empty_rows($content){
+  $content = preg_replace("(<tr[^/>]+>[ \n\r\t]*<\/tr>)", '', $content);
+  return $content;
+}
+
 function pmpro_pdf_temlate_editor_get_forced_css(){
     return "<style>h1, p, table {
               font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
           }
 
-          #invoice{
+          #invoice, table{
               width:700px;
-              text-align:center;
+          }
 
+          #invoice{
+            text-align:center;
           }
 
           #heading{
