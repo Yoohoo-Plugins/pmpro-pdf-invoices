@@ -26,6 +26,9 @@ Yes the PDF templates are customizable and use general HTML code with custom tag
 
 == Changelog ==
 
+= 1.4 =
+Resolved bug where custom templates did not store custom CSS changes
+
 = 1.3 =
 Added check to remove empty tables rows from custom templates as this causes tables to be misplaced within the DomPDF handler
 Added additional placement styles to prevent any divs from being placed where they do not belong

@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.3
+ * Version: 1.4
  * License: GPL2 or later
  * Tested up to: 5.2.2
  * Requires PHP: 5.6
@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) or exit;
  */
 define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 define( 'YH_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.3' );
+define( 'PMPRO_PDF_VERSION', '1.4' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
