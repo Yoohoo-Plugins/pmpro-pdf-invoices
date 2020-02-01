@@ -218,7 +218,7 @@ function pmpropdf_generate_pdf($order_data){
 
 	//Additional replacements - Developer hook to add custom variable parse
 	//Should use key-value pair array (assoc)
-	$custom_replacements = apply_filters('pmpro_pdf_invoice_custom_variable_hook', array());
+	$custom_replacements = apply_filters('pmpro_pdf_invoice_custom_variable_hook', array(), $user, $order_data );
 	if(count($custom_replacements) > 0){
 		foreach ($custom_replacements as $key => $value) {
 			$body = str_replace($key, $value, $body);
