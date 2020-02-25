@@ -49,6 +49,7 @@ function pmpro_pdf_template_editor_page_html(){
 
         <form method='POST' style='display: none;' id='save_html_form'>
             <textarea name='template_content' id='template_content'></textarea>
+            <textarea name='template_addition_styles' id='template_addition_styles'></textarea>
         </form>
     </div>
     <style>
@@ -66,7 +67,10 @@ function pmpro_pdf_template_editor_page_html(){
 function pmpro_pdf_template_editor_check_save(){
     if(isset($_POST['template_content'])){
         $html_content = str_replace('\\', '', $_POST['template_content']);
+        $css_content =  strip_tags($_POST['template_addition_styles']);
         $html_content = pmpro_pdf_cleanup_editor_html($html_content);
+
+        $html_content .= "<style>$css_content</style>";
 
         try{
             if(!file_exists(get_stylesheet_directory() . '/pmpro-pdf-invoices')){

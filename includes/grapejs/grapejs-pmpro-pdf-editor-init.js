@@ -298,7 +298,9 @@ jQuery(function($){
   $('.save_template_btn').on('click', function(){
     if(typeof window.pmpro_pdf_editor !== 'undefined'){
       var current_html = window.pmpro_pdf_editor.getHtml();
+      var current_css =  window.pmpro_pdf_editor.getCss();
       jQuery('#template_content').val(current_html);
+      jQuery('#template_addition_styles').val(current_css);
       jQuery('#save_html_form').submit();
     }
   });
