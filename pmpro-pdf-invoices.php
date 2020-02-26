@@ -490,6 +490,8 @@ function pmpropdf_download_list_shortcode_handler(){
 				if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
 					$content .= '<tr>';
 					$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
+					$content .=		'<td>' . $membership_level . '</td>';
+					$content .=		'<td>' . pmpro_formatPrice($invoice->total) . '</td>';
 					$content .= 	'<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $invoice->code ) ). '">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
 					$content .= '</tr>';
 				}
@@ -501,8 +503,10 @@ function pmpropdf_download_list_shortcode_handler(){
 			$table_content .= "<table width='100%'' cellpadding='0' cellspacing='0' border='0'>";
 			$table_content .= 	"<thead>";
 			$table_content .= 		"<tr>";
-			$table_content .= 			"<th>" . __("Date", 'pmpro-pdf-invoices' ) . "</th>";
-			$table_content .= 			"<th>" . __("Level", 'pmpro-pdf-invoices' ) . "</th>";
+			$table_content .= 			"<th>" . __("Date", 'paid-memberships-pro' ) . "</th>";
+			$table_content .= 			"<th>" . __("Level", 'paid-memberships-pro' ) . "</th>";
+			$table_content .= 			"<th>" . __("Amount", 'paid-memberships-pro' ) . "</th>";
+			$table_content .= 			"<th>" . __("Download", 'paid-memberships-pro' ) . "</th>";
 			$table_content .= 		"</tr>";
 			$table_content .= 	"</thead>";
 			$table_content .= 	"<tbody>";
