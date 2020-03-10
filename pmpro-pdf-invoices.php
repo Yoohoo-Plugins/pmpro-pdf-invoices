@@ -492,7 +492,7 @@ function pmpropdf_download_list_shortcode_handler(){
 					$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
 					$content .=		'<td>' . $membership_level . '</td>';
 					$content .=		'<td>' . pmpro_formatPrice($invoice->total) . '</td>';
-					$content .= 	'<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $invoice->code ) ). '">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
+					$content .= 	'<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $invoice->code ) ). '">' . pmpropdf_generate_invoice_name( $invoice->code ) .'</a></td>';
 					$content .= '</tr>';
 				}
 			}
