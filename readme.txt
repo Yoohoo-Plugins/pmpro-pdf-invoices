@@ -3,7 +3,7 @@ Contributors: andrewza, yoohooplugins
 Tags: pdf, pdf invoice, invoices
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4GC4JEZH7KSKL
 Requires at least: 4.5
-Tested up to: 5.0
+Tested up to: 5.4
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv2 or later
@@ -25,6 +25,15 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+
+= 1.5 - 10-03-2020 =
+Improvements to the download shortcode table. Thanks @mircobabini
+Enhancement to show the order name as the download link. Thanks @mircobabini
+Fixed issue where recurring invoice emails weren't attaching PDF.
+Generates a PDF whenever an order is added.
+Added ability to add custom variables to PDF template with a filter `pmpro_pdf_invoice_custom_variables`.
+Show 15 latest orders for PDF downloads, filterable via `pmpropdf_invoice_table_limit`
+Added filter to adjust prefix of "INV" `pmpro_pdf_invoice_prefix`
 
 = 1.4 =
 Resolved bug where custom templates did not store custom CSS changes
