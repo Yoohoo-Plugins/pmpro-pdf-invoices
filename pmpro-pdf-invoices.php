@@ -5,9 +5,9 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.4
+ * Version: 1.5
  * License: GPL2 or later
- * Tested up to: 5.2.2
+ * Tested up to: 5.4
  * Requires PHP: 5.6
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: pmpro-pdf-invoices
@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) or exit;
  */
 define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 define( 'YH_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.4' );
+define( 'PMPRO_PDF_VERSION', '1.5' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -98,7 +98,7 @@ include( PMPRO_PDF_DIR . '/includes/dompdf/autoload.inc.php' );
 */
 function pmpropdf_attach_pdf_email( $attachments, $email ) {
 	// Let's not send it to admins and only with checkout emails.
-	if ( strpos( $email->template, "checkout_" ) !== false && strpos( $email->template, "admin" ) !== false ) {
+	if ( strpos( $email->template, "checkout_" ) !== false && strpos( $email->template, "admin" ) !== false && strpos( $email->template, "invoice" ) !== false ) {
 		return $attachments;
 	}
 
@@ -128,6 +128,16 @@ function pmpropdf_attach_pdf_email( $attachments, $email ) {
 
 }
 add_filter( 'pmpro_email_attachments', 'pmpropdf_attach_pdf_email', 10, 2 );
+
+
+/**
+ * Generate PDF invoice when an order is added.
+ * @since 1.5
+ */
+function pmpropdf_added_order( $order ) {
+	pmpropdf_generate_pdf($order);
+}
+add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
 
 /**
  * Handles storage of PDF Invoice
@@ -161,7 +171,7 @@ function pmpropdf_generate_pdf($order_data){
 		$billing_details = '';
 	}
 
-	$date = new DateTime( $order_data->timestamp );
+	$date = isset( $order_data->timestamp) ? new DateTime( $order_data->timestamp ) : new DateTime();
 	$date = $date->format( "Y-m-d" );
 
 	$payment_method = !empty( $order_data->gateway ) ? $order_data->gateway : __( 'N/A', 'pmpro-pdf-invoices');
@@ -218,7 +228,7 @@ function pmpropdf_generate_pdf($order_data){
 
 	//Additional replacements - Developer hook to add custom variable parse
 	//Should use key-value pair array (assoc)
-	$custom_replacements = apply_filters('pmpro_pdf_invoice_custom_variable_hook', array(), $user, $order_data );
+	$custom_replacements = apply_filters('pmpro_pdf_invoice_custom_variables', array(), $user, $order_data );
 	if(count($custom_replacements) > 0){
 		foreach ($custom_replacements as $key => $value) {
 			$body = str_replace($key, $value, $body);
@@ -304,7 +314,7 @@ function pmpropdf_get_invoice_directory_or_url($url = false){
  * Generates an invoice name from an order code
 */
 function pmpropdf_generate_invoice_name($order_code){
-	return "INV" . $order_code . ".pdf";
+	return apply_filters( 'pmpro_pdf_invoice_prefix', 'INV' ) . $order_code . ".pdf";
 }
 
 /**
@@ -476,13 +486,15 @@ function pmpropdf_download_list_shortcode_handler(){
 		global $wpdb, $current_user;
 		$content = "";
 
+		$limit = apply_filters( 'pmpropdf_invoice_table_limit', 15 );
+
 		$invoices = $wpdb->get_results("
 			SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
 			FROM $wpdb->pmpro_membership_orders
 			WHERE user_id = '$current_user->ID'
 			AND status NOT
 			IN('review', 'token', 'error')
-			ORDER BY timestamp DESC"
+			ORDER BY timestamp DESC LIMIT " . $limit
 		);
 
 		if(!empty($invoices)){
@@ -491,6 +503,8 @@ function pmpropdf_download_list_shortcode_handler(){
 				$invoice = new MemberOrder;
 				$invoice->getMemberOrderByID($invoice_id);
 				$invoice->getMembershipLevel();
+
+				$membership_level = $invoice->membership_level->name;
 
 				if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
 					$content .= '<tr>';
