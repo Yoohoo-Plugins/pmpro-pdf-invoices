@@ -502,7 +502,7 @@ function pmpropdf_download_list_shortcode_handler(){
 			$table_content .= 	"<thead>";
 			$table_content .= 		"<tr>";
 			$table_content .= 			"<th>" . __("Date", 'pmpro-pdf-invoices' ) . "</th>";
-			$table_content .= 			"<th>" . __("Level", 'pmpro-pdf-invoices' ) . "</th>";
+			$table_content .= 			"<th>" . __("Download", 'pmpro-pdf-invoices' ) . "</th>";
 			$table_content .= 		"</tr>";
 			$table_content .= 	"</thead>";
 			$table_content .= 	"<tbody>";
