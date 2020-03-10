@@ -487,6 +487,11 @@ function pmpropdf_download_list_shortcode_handler(){
 
 		if(!empty($invoices)){
 			foreach ($invoices as $key => $invoice) {
+				$invoice_id = $invoice->id;
+				$invoice = new MemberOrder;
+				$invoice->getMemberOrderByID($invoice_id);
+				$invoice->getMembershipLevel();
+
 				if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
 					$content .= '<tr>';
 					$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
