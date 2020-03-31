@@ -253,7 +253,7 @@ function pmpropdf_generate_pdf($order_data){
 
 // look at changing this soon.
 function pmpropdf_admin_column_header( $order_id ) {
-	echo '<td>' . __( 'PDF', 'pmpro-pdf-invoices' ) . '</td>';
+	echo '<th>' . __( 'Invoice PDF', 'pmpro-pdf-invoices' ) . '</th>';
 }
 add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
 
@@ -537,7 +537,7 @@ function pmpropdf_download_list_shortcode_handler(){
 
 		} else {
 			$content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
-			$content .= '<div><em>No PDF invoices found...</em></div>';
+			$content .= "<div><em>" . __("No PDF invoices found...", 'pmpro-pdf-invoices' ) . "</em></div>";
 		}
 	}
 	return $content;
