@@ -253,7 +253,7 @@ function pmpropdf_generate_pdf($order_data){
 
 // look at changing this soon.
 function pmpropdf_admin_column_header( $order_id ) {
-	echo '<td>' . __( 'PDF', 'pmpro-pdf-invoices' ) . '</td>';
+	echo '<th>' . __( 'Invoice PDF', 'pmpro-pdf-invoices' ) . '</th>';
 }
 add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
 
