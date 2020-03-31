@@ -537,7 +537,7 @@ function pmpropdf_download_list_shortcode_handler(){
 
 		} else {
 			$content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
-			$content .= '<div><em>No PDF invoices found...</em></div>';
+			$content .= "<div><em>" . __("No PDF invoices found...", 'pmpro-pdf-invoices' ) . "</em></div>";
 		}
 	}
 	return $content;
