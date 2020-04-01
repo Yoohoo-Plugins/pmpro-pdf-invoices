@@ -48,6 +48,7 @@ function pmpro_pdf_template_editor_page_html(){
         </div>
 
         <form method='POST' style='display: none;' id='save_html_form'>
+            <input type="text" name='redirect_on_save' id='redirect_on_save' value=''>
             <textarea name='template_content' id='template_content'></textarea>
             <textarea name='template_addition_styles' id='template_addition_styles'></textarea>
         </form>
@@ -59,6 +60,10 @@ function pmpro_pdf_template_editor_page_html(){
 
     .gjs-am-assets-cont {
         width: 100% !important;
+    }
+
+    .gjs-four-color{
+        color: #1dd0a2 !important;
     }
     </style>
     <?php
@@ -86,6 +91,19 @@ function pmpro_pdf_template_editor_check_save(){
                 <p><?php _e('Template Saved!'); ?></p>
             </div>
             <?php
+            if(!empty($_POST['redirect_on_save'])){
+              $redirectUrl = trim(strip_tags($_POST['redirect_on_save']));
+              //We have a redirect passed in 
+              ?>
+              <div class="notice notice-warning">
+                  <p><?php _e('Please wait while we redirect you...'); ?></p>
+              </div>
+              <script>
+                window.location.href = "<?php echo $redirectUrl; ?>";
+              </script>
+              <?php
+            }
+
         } catch(Exception $ex){
             ?>
             <div class="update-nag">

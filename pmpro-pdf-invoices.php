@@ -624,3 +624,13 @@ function pmpropdf_check_should_zip(){
 		}
 	}
 }
+
+
+function pmpropdf_footer_note ($footnote){
+	if(!empty($_GET['page']) && strpos($_GET['page'], 'pmpro_pdf_invoices') !== FALSE){
+		$footnote .= "<em> || PMPro PDF Invoices (v" . PMPRO_PDF_VERSION . ") by <a href='https://yoohooplugins.com/' target='_blank'>Yoohoo Plugins</a>.</em>";
+	}
+	return $footnote;
+}
+ 
+add_filter('admin_footer_text', 'pmpropdf_footer_note', 10, 1);

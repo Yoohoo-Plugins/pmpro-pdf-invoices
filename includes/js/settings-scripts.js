@@ -5,6 +5,18 @@ jQuery(function(){
         total_skipped : 0
     };
 
+    jQuery(document).ready(function(){
+        var activeTab = window.location.hash;
+        activeTab = activeTab.trim();
+
+        console.log(activeTab);
+        
+        if(activeTab !== "" && activeTab.indexOf('#tab_') !== -1){
+            activeTab = activeTab.replace('#tab_', '');
+            jQuery('.pmpropdf_tab[data-tab="' + activeTab + '"]').click();
+        }
+    });
+
     jQuery('.pmpropdf_tab').on('click', function(){
         jQuery('.pmpropdf_tab').removeClass('active');
         jQuery(this).addClass('active');
@@ -12,7 +24,8 @@ jQuery(function(){
         var tab_i = jQuery(this).attr('data-tab');
 
         jQuery('.pmpropdf_option_section').removeClass('visible');
-        jQuery('.pmpropdf_option_section[data-tab=' + tab_i + ']').addClass('visible');;
+        jQuery('.pmpropdf_option_section[data-tab=' + tab_i + ']').addClass('visible');
+        window.location.hash = 'tab_' + tab_i;
     });
 
     jQuery('.generate_missing_logs').on('click', function(e){

@@ -182,19 +182,29 @@ if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'insert_account_shortco
 }
 
 $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
+
+//Generate a license tab badge class
+$license_tab_badge = '';
+if (false !== $status && $status == 'valid') {
+	if ($expired) {
+		$license_tab_badge = 'pmpropdf_tab_badge expired';
+	}
+} else {
+	$license_tab_badge = 'pmpropdf_tab_badge unregistered';
+}
 ?>
 	<div class="wrap">
 		<h2><?php _e('PMPro PDF Invoices Options'); ?></h2>
 
 		<div class='pmpropdf_option_tabs'>
-			<div class='pmpropdf_tab active' data-tab='0'>License</div>
-			<div class='pmpropdf_tab' data-tab='1'>Tools</div>
+			<div class='pmpropdf_tab active' data-tab='1'>Tools</div>
 			<div class='pmpropdf_tab' data-tab='2'>Settings</div>
-			<div class='pmpropdf_tab' data-tab='3'>Info</div>
 			<div class='pmpropdf_tab' data-tab='4'>Shortcode</div>
+			<div class='pmpropdf_tab' data-tab='3'>Info</div>
+			<div class='pmpropdf_tab <?php echo $license_tab_badge; ?>' data-tab='0'>License</div>
 		</div>
 
-		<div class='wp-editor-container pmpropdf_option_section visible' data-tab='0'>
+		<div class='wp-editor-container pmpropdf_option_section' data-tab='0'>
 			<form method="post" action="">
 
 				<table class="form-table">
@@ -205,7 +215,7 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 							</th>
 							<td>
 								<input id="pmpro_pdf_invoice_license_key" name="pmpro_pdf_invoice_license_key" type="text" class="regular-text" value="<?php esc_attr_e( $license ); ?>" />
-								<label class="description" for="pmpro_pdf_invoice_license_key"><?php _e('Enter your license key.'); ?></label><br/>
+								<label class="description" for="pmpro_pdf_invoice_license_key"> <small><em><?php _e('Enter your license key.'); ?></em></small></label><br/>
 							</td>
 						</tr>
 
@@ -260,7 +270,7 @@ $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
 				</form>
 			</div>
 
-			<div class='wp-editor-container pmpropdf_option_section' data-tab='1'>
+			<div class='wp-editor-container pmpropdf_option_section visible' data-tab='1'>
 				<strong>Template Editor</strong>
 				<br>
 

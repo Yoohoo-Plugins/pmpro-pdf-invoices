@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     container : '#gjs',
     plugins: ['gjs-blocks-basic'],
     height: (window.outerHeight - 200) + 'px',
+    noticeOnUnload: false,
     showDevices: 0,
     fromElement: true,
     storageManager : {
@@ -63,6 +64,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                       padding:12px;
                   }`,
   });
+
+  window.pmpro_pdf_editor.Panels.getButton('views', 'open-blocks').set('active', true);
 
   const blockManager = window.pmpro_pdf_editor.BlockManager;
 
@@ -294,7 +297,42 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 });
 
+// Custom unload handler
+window.pmpro_run_default_unload = true;
+window.onbeforeunload = function(e){
+  if(typeof window.pmpro_pdf_editor !== 'undefined' && typeof window.pmpro_pdf_editor.editor !== 'undefined'){
+    var current_changes_counter = window.pmpro_pdf_editor.editor.get('changesCount');
+    if(current_changes_counter > 0 && pmpro_run_default_unload){
+      return true;
+    }
+  }
+};
+
 jQuery(function($){
+  $('body').on('click', 'a', function(e){
+    if(typeof window.pmpro_pdf_editor !== 'undefined' && typeof window.pmpro_pdf_editor.editor !== 'undefined'){
+      var current_changes_counter = window.pmpro_pdf_editor.editor.get('changesCount');
+      if(current_changes_counter > 0 && pmpro_run_default_unload){
+        
+        var current_href = $(this).attr('href');
+        if(current_href.trim() !== '#'){
+          //This is not an anchor
+          //It is safe to say this will cause a redirect, let's internally handle this instead
+          pmpro_run_default_unload = false;
+          if (confirm('Some changes to your template have not been saved, would you like to save now?')) {
+            //Stop the redirect
+            e.preventDefault();
+            //Trigger a save instead
+            $('#save_html_form #redirect_on_save').val(current_href);
+            $('.save_template_btn').click();
+          } else {
+            window.location.href = current_href;
+          }
+        }
+      }
+    }
+  });
+
   $('.save_template_btn').on('click', function(){
     if(typeof window.pmpro_pdf_editor !== 'undefined'){
       var current_html = window.pmpro_pdf_editor.getHtml();
