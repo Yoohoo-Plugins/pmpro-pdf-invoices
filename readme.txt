@@ -25,6 +25,10 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+= 1.6 - 01-04-2020 =
+* Enhancement: General UI/UX improvements.
+* Enhancement: Support localization/internationalization. Thanks @mircobabini
+* Bug Fix: Fixed issue with PDF table. Thakns @mircobabini
 
 = 1.5 - 10-03-2020 =
 Improvements to the download shortcode table. Thanks @mircobabini
