@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.5
+ * Version: 1.6
  * License: GPL2 or later
  * Tested up to: 5.4
  * Requires PHP: 5.6
@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) or exit;
  */
 define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 define( 'YH_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.5' );
+define( 'PMPRO_PDF_VERSION', '1.6' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -49,6 +49,11 @@ include PMPRO_PDF_DIR . '/includes/template-editor.php';
 include PMPRO_PDF_DIR . '/includes/general-settings.php';
 
 function pmpropdf_init() {
+
+	// Load text domain
+	load_plugin_textdomain( 'pmpro-pdf-invoices', false, plugin_basename( __FILE__ ) . '/languages' );
+
+
 	if ( isset( $_REQUEST['pmpropdf'] ) ) {
 		// Include other files.
 		include PMPRO_PDF_DIR . '/includes/download-pdf.php';
