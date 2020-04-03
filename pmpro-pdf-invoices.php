@@ -101,9 +101,14 @@ include( PMPRO_PDF_DIR . '/includes/dompdf/autoload.inc.php' );
  * Store the PDF into the uploads directory
  * Return new attachments array to the PMPro email attachment hook
 */
-function pmpropdf_attach_pdf_email( $attachments, $email ) {
+function pmpropdf_attach_pdf_email( $attachments, PMProEmail $email ) {
 	// Let's not send it to admins and only with checkout emails.
 	if ( strpos( $email->template, "checkout_" ) !== false && strpos( $email->template, "admin" ) !== false && strpos( $email->template, "invoice" ) !== false ) {
+		return $attachments;
+	}
+
+	// Let developers decide if attach the pdf
+	if( ! apply_filters( 'pmpropdf_can_attach_pdf', true, $email ) ){
 		return $attachments;
 	}
 
@@ -139,8 +144,11 @@ add_filter( 'pmpro_email_attachments', 'pmpropdf_attach_pdf_email', 10, 2 );
  * Generate PDF invoice when an order is added.
  * @since 1.5
  */
-function pmpropdf_added_order( $order ) {
-	pmpropdf_generate_pdf($order);
+function pmpropdf_added_order( MemberOrder $order ) {
+	// Let developers decide if generate the pdf
+	if( apply_filters( 'pmpropdf_can_generate_pdf', true, $order ) ){
+		pmpropdf_generate_pdf($order);
+	}
 }
 add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
 
