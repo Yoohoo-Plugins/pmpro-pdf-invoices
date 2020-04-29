@@ -102,8 +102,13 @@ include( PMPRO_PDF_DIR . '/includes/dompdf/autoload.inc.php' );
  * Return new attachments array to the PMPro email attachment hook
 */
 function pmpropdf_attach_pdf_email( $attachments, $email ) {
-	// Let's not send it to admins and only with checkout emails.
-	if ( strpos( $email->template, "checkout_" ) !== false && strpos( $email->template, "admin" ) !== false && strpos( $email->template, "invoice" ) !== false ) {
+	// Let's not send it to admins
+	if( strpos( $email->template, "admin" ) !== false ){
+		return $attachments;
+	}
+
+	// Let's send it only with checkout emails and invoice email
+	if( strpos( $email->template, "checkout_" ) === false && $email->template != 'invoice' ) {
 		return $attachments;
 	}
 
