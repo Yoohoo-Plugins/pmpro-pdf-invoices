@@ -198,52 +198,32 @@ function pmpropdf_generate_pdf($order_data){
 	$logo_image = !empty($logo_url) ? "<img style='max-width:300px;' src='$logo_url' />" : '';
 
 	// Items to replace.
-	$replace = array(
-		"{{invoice_code}}",
-		"{{user_email}}",
-		'{{membership_level}}',
-		'{{billing_address}}',
-		"{{payment_method}}",
-		"{{total}}",
-		"{{site}}",
-		"{{site_url}}",
-		"{{subtotal}}",
-		"{{tax}}",
-		"{{ID}}",
-		"{{invoice_date}}",
-		"{{logo_image}}"
+	$replacements = array(
+		"{{invoice_code}}" => $order_data->code,
+		"{{user_email}}" => $user->data->user_email,
+		'{{membership_level}}' => $user_level_name,
+		'{{billing_address}}' => $billing_details,
+		"{{payment_method}}" => $payment_method,
+		"{{total}}" => pmpro_formatPrice($order_data->total),
+		"{{site}}" => get_bloginfo( 'sitename' ),
+		"{{site_url}}" => esc_url( get_site_url() ),
+		"{{subtotal}}" => pmpro_formatPrice( $order_data->subtotal ),
+		"{{tax}}" => pmpro_formatPrice($order_data->tax),
+		"{{ID}}" => $order_data->membership_id,
+		"{{invoice_date}}" => $date,
+		"{{logo_image}}" => $logo_image
 	);
-	// Values to replace them with.
-	$values = array(
-		$order_data->code,
-		$user->data->user_email,
-		$user_level_name,
-		$billing_details,
-		$payment_method,
-		pmpro_formatPrice($order_data->total),
-		get_bloginfo( 'sitename' ),
-		esc_url( get_site_url() ),
-		pmpro_formatPrice( $order_data->subtotal ),
-		pmpro_formatPrice($order_data->tax),
-		$order_data->membership_id,
-		$date,
-		$logo_image
-	);
-
-
-	// Setup PDF Structure
-	$body = str_replace( $replace, $values, $body );
-
-
 
 	//Additional replacements - Developer hook to add custom variable parse
 	//Should use key-value pair array (assoc)
-	$custom_replacements = apply_filters('pmpro_pdf_invoice_custom_variables', array(), $user, $order_data );
-	if(count($custom_replacements) > 0){
-		foreach ($custom_replacements as $key => $value) {
-			$body = str_replace($key, $value, $body);
-		}
-	}
+	$replacements = apply_filters('pmpro_pdf_invoice_custom_variables', $replacements, $user, $order_data );
+
+	// Setup PDF Structure
+	$body = str_replace(
+		array_keys( $replacements ),
+		array_values( $replacements ),
+		$body
+	);
 
 	$dompdf->loadHtml( $body );
 	$dompdf->render();
