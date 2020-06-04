@@ -154,7 +154,8 @@ function pmpropdf_generate_pdf($order_data){
 
 	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
 
-	$custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
+	$custom_dir = apply_filters( 'pmpro_pdf_template_path', get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html", $order_data );
+
 	if ( file_exists( $custom_dir ) ) {
 		$body = file_get_contents( $custom_dir );
 	} else {
