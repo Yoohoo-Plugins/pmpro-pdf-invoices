@@ -319,7 +319,19 @@ jQuery(function($){
           //This is not an anchor
           //It is safe to say this will cause a redirect, let's internally handle this instead
           pmpro_run_default_unload = false;
-          if (confirm('Some changes to your template have not been saved, would you like to save now?')) {
+          e.preventDefault();
+
+          pmpro_confirm_leave_prompt(
+            function(){
+              $('#save_html_form #redirect_on_save').val(current_href);
+              $('.save_template_btn').click();
+            },
+            function(){
+              window.location.href = current_href;
+            }
+          );
+
+          /*if (confirm('Some changes to your template have not been saved, would you like to save now?')) {
             //Stop the redirect
             e.preventDefault();
             //Trigger a save instead
@@ -327,14 +339,17 @@ jQuery(function($){
             $('.save_template_btn').click();
           } else {
             window.location.href = current_href;
-          }
+          }*/
         }
       }
     }
   });
 
-  $('.save_template_btn').on('click', function(){
+  $('.save_template_btn').on('click', function(e){
     if(typeof window.pmpro_pdf_editor !== 'undefined'){
+      e.preventDefault();
+      pmpro_run_default_unload = false;
+      
       var current_html = window.pmpro_pdf_editor.getHtml();
       var current_css =  window.pmpro_pdf_editor.getCss();
       jQuery('#template_content').val(current_html);
@@ -342,4 +357,25 @@ jQuery(function($){
       jQuery('#save_html_form').submit();
     }
   });
+
+  function pmpro_confirm_leave_prompt(success, cancel){
+    var prompt = $('.pmpro-pdf-leave-notice');
+    prompt.addClass('active');
+
+    prompt.find('.accept-btn').on('click', function(){
+      if(typeof success === 'function'){
+        success();
+      }
+      
+      prompt.removeClass('active');
+    });
+
+    prompt.find('.cancel-btn').on('click', function(){
+      if(typeof success === 'function'){
+        cancel();
+      }
+
+      prompt.removeClass('active');
+    });
+  }
 });

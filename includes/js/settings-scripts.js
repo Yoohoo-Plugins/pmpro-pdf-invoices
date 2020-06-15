@@ -95,7 +95,11 @@ function pmpropdf_ajax_batch_loop(batch_size, batch_no){
                     pmpropdf_ajax_batch_loop(batch_size, response.batch_no+1);
                 } else {
                     //Show complete message
-                    jQuery('.missing_invoice_log').append('<div class="item">Processing Complete!</div>');
+                    if(pmpropdf_js.batch_process.total_created == 0){
+                        jQuery('.missing_invoice_log').append('<div class="item">No missing invoices!</div>');
+                    } else {
+                        jQuery('.missing_invoice_log').append('<div class="item">Processing Complete!</div>');
+                    }
                 }
             }
 
@@ -107,9 +111,9 @@ function pmpropdf_update_batch_stats(){
     jQuery('.missing_invoice_log').html(
         '<div class="item">' +
             'Processed: ' + pmpropdf_js.batch_process.total_count +
-            ' - Created: ' + pmpropdf_js.batch_process.total_created +
-            ' - Skipped: ' + pmpropdf_js.batch_process.total_skipped +
-        '</div>'
+            '<br>Created: ' + pmpropdf_js.batch_process.total_created +
+            '<br>Skipped: ' + pmpropdf_js.batch_process.total_skipped +
+        '</div><br>'
     );
 }
 

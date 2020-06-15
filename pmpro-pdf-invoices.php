@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.6
+ * Version: 1.7
  * License: GPL2 or later
  * Tested up to: 5.4
  * Requires PHP: 5.6
@@ -34,9 +34,11 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Include update class for automatic updates.
  */
-define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
-define( 'YH_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.6' );
+if ( ! defined( 'YOOHOO_STORE' ) ) {
+	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
+}
+define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
+define( 'PMPRO_PDF_VERSION', '1.7' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -86,7 +88,7 @@ $license_key = trim( get_option( 'pmpro_pdf_invoice_license_key' ) );
 $edd_updater = new PMPro_PDF_Invoice_Updater( YOOHOO_STORE, __FILE__, array(
 		'version' => PMPRO_PDF_VERSION,
 		'license' => $license_key,
-		'item_id' => YH_PLUGIN_ID,
+		'item_id' => PMPRO_PDF_PLUGIN_ID,
 		'author' => 'Yoohoo Plugins',
 		'url' => home_url()
 	)
@@ -108,7 +110,7 @@ function pmpropdf_attach_pdf_email( $attachments, $email ) {
 	}
 
 	// Let's send it only with checkout emails and invoice email
-	if( strpos( $email->template, "checkout_" ) === false && $email->template != 'invoice' ) {
+	if( strpos( $email->template, "checkout_" ) === false && $email->template != 'invoice' && $email->template != 'billable_invoice') {
 		return $attachments;
 	}
 
