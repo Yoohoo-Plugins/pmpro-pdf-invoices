@@ -34,8 +34,10 @@ defined( 'ABSPATH' ) or exit;
 /**
  * Include update class for automatic updates.
  */
-define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
-define( 'YH_PLUGIN_ID', 2117 );
+if ( ! defined( 'YOOHOO_STORE' ) ) {
+	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
+}
+define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
 define( 'PMPRO_PDF_VERSION', '1.7' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
@@ -86,7 +88,7 @@ $license_key = trim( get_option( 'pmpro_pdf_invoice_license_key' ) );
 $edd_updater = new PMPro_PDF_Invoice_Updater( YOOHOO_STORE, __FILE__, array(
 		'version' => PMPRO_PDF_VERSION,
 		'license' => $license_key,
-		'item_id' => YH_PLUGIN_ID,
+		'item_id' => PMPRO_PDF_PLUGIN_ID,
 		'author' => 'Yoohoo Plugins',
 		'url' => home_url()
 	)
