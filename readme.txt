@@ -25,6 +25,16 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+= 1.7 - 15-05-2020 =
+* Enhancement: Added fullscreen template editor
+* Enhancement: Added custom 'unsaved changes' prompt, removed browser dialog (Still used if custom prompt cannot be shown for any reason)
+* Enhancement: General improvements to the editor
+* Enhancement: Added logic to attach invoice PDF's to billable invoice emails (previously: invoice and checkout emails only)
+* Enhancement: Notice clarity added to the 'generate missing invoice logs'
+* Enhancement: Added hint text to draw attention to built in templates
+* Bug Fix: Fixed an issue where clicking 'Save Template' would sometimes result in 'unsaved changes' confirm dialog to show
+
+
 = 1.6 - 01-04-2020 =
 * Enhancement: General UI/UX improvements.
 * Enhancement: Support localization/internationalization. Thanks @mircobabini
