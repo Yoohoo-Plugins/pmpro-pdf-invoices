@@ -183,7 +183,15 @@ function pmpropdf_generate_pdf($order_data){
 		$billing_details = '';
 	}
 
-	$date = isset( $order_data->timestamp) ? new DateTime( $order_data->timestamp ) : new DateTime();
+	$datetime = "";
+	if(empty($order_data->datetime) && empty($order_data->timestamp))
+		$datetime = date("Y-m-d H:i:s", time());
+	elseif(empty($order_data->datetime) && !empty($order_data->timestamp) && is_numeric($order_data->timestamp))
+		$datetime = date("Y-m-d H:i:s", $order_data->timestamp);	//get datetime from timestamp
+	elseif(empty($order_data->datetime) && !empty($order_data->timestamp))
+		$datetime = $order_data->timestamp;		//must have a datetime in it
+
+	$date = new DateTime( $datetime );
 	$date = $date->format( "Y-m-d" );
 
 	$payment_method = !empty( $order_data->gateway ) ? $order_data->gateway : __( 'N/A', 'pmpro-pdf-invoices');
