@@ -174,11 +174,8 @@ function pmpropdf_generate_pdf($order_data){
 	if ( ! empty( $order_data->billing->name ) ) {
 		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
 		$billing_details .= "<p>" . $order_data->billing->name . "<br>";
-		$billing_details .=  $order_data->billing->street . "<br>";
-		$billing_details .= $order_data->billing->zip . "<br>";
-		$billing_details .= $order_data->billing->city . "<br>";
-		$billing_details .= $order_data->billing->state . "<br>";
-		$billing_details .= $order_data->billing->country . "<br>";
+		$billing_details .= $order_data->billing->street . "<br>";
+		$billing_details .= $order_data->billing->zip . " " . $order_data->billing->city . " (" . $order_data->billing->state . "), " . $order_data->billing->country . "<br>";
 		$billing_details .= $order_data->billing->phone . "</p>";
 	} else {
 		$billing_details = '';
