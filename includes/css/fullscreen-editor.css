@@ -1,0 +1,129 @@
+#adminmenumain, 
+#wpadminbar {
+    display: none;
+}
+
+#wpcontent{
+    margin-left: 0;
+    padding-left: 0;
+}
+
+#wpbody-content {
+	padding-bottom: 20px;
+}
+
+#wpfooter {
+    margin-left: 0;
+    background: #313131;
+    color: #989898;
+}
+
+.update-nag, .notice:not(.pmpro_pdf_notice){
+    display: none;
+}
+
+.wrap {
+    margin-top: -33px;
+}
+
+.wrap.pmpro-pdf-editor-wrap {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.wrap.pmpro-pdf-editor-wrap h2 {
+    background: #383838;
+    padding: 15px;
+    color: #fff;
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    font-size: 23px;
+}
+
+.pmpro-pdf-control-bar-top{
+	text-align:right; 
+	padding-right: 25px;
+	padding-bottom: 15px;
+	padding-top: 16px;
+	background: #383838;
+	width: 50%;
+	box-sizing: border-box;
+	display: inline-block;
+	vertical-align: top;
+	float: right; 
+}
+
+.pmpro-pdf-control-bar-bottom{
+	text-align:right; 
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-right: 25px;
+	background: #383838;
+}
+
+.pmpro_pdf_notice {
+    position: fixed;
+    top: 0;
+    margin:0 !important;
+    padding: 0;
+    height: 37px;
+    width: 100%;
+    background-color: #313131;
+    color: #fff
+}
+
+.pmpro_pdf_notice p {
+    margin: 0;
+    margin-top: 7px;
+    padding-left: 15px;
+}
+
+.pmpro-pdf-editor-wrap.notice_present{
+    margin-top: 5px;
+}
+
+.pmpro-pdf-leave-notice {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0000005c;
+    z-index: 100;
+    display: none;
+}
+
+.pmpro-pdf-leave-notice.active {
+	display: block;
+}
+
+.pmpro-pdf-leave-notice .pmrpro-pdf-leave-notice-inner{
+    position: absolute;
+    background: #fff;
+    border-radius: 5px;
+    padding: 30px;
+    width: 350px;
+    max-width: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 5px 5px #33333312;
+}
+
+.pmpro-pdf-leave-notice .pmrpro-pdf-leave-notice-inner h4{
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.1em
+}
+
+.pmpro-pdf-leave-notice .pmrpro-pdf-leave-notice-inner p{
+    margin-bottom: 20px;
+}
+
+.pmpro-pdf-leave-notice .button_wrap {
+    text-align: right;
+    border-top: 1px solid #e8e8e8;
+    padding-top: 20px;
+}

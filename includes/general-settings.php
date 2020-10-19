@@ -292,7 +292,10 @@ if (false !== $status && $status == 'valid') {
 					<a class='button reset_template_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=reset_template'>Reset Template</a>
 				<?php } ?>
 
-				<a class='button select_template_btn' href='#' title="Select a template from our library">Select Template</a>
+				<a class='button select_template_btn' href='#' title="Select a template from our library">Select Template</a> 
+
+				<br><br>
+				<small><em><strong>Tip:</strong> Not sure where to start? use one of our included templates by clicking on 'Select Template'</em></small>
 
 				<br><br>
 				<strong>Generate Missing Invoices</strong>

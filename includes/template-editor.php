@@ -4,12 +4,16 @@
 */
 
 function pmpro_pdf_template_editor_page(){
+    global $pmpro_pdf_notice_shown;
+    $pmpro_pdf_notice_shown = false;
+
     pmpro_pdf_template_editor_check_save();
     pmpro_pdf_temaplte_editor_enqueues();
     pmpro_pdf_template_editor_page_html();
 }
 
 function pmpro_pdf_temaplte_editor_enqueues(){
+    wp_enqueue_style('pmpropdf-template-editor-fullscreen-css', plugin_dir_url(__FILE__) . '/css/fullscreen-editor.css');
     wp_enqueue_style('pmpropdf-template-editor-grape-css', plugin_dir_url(__FILE__) . '/grapejs/grapejs.min.css');
 
     wp_enqueue_script('pmpropdf-template-editor-grape-js', plugin_dir_url(__FILE__) . '/grapejs/grapejs.min.js' , array());
@@ -23,7 +27,7 @@ function pmpro_pdf_temaplte_editor_enqueues(){
 }
 
 function pmpro_pdf_template_editor_page_html(){
-
+    global $pmpro_pdf_notice_shown;
     $custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
     if(file_exists($custom_dir)){
         $template_body = file_get_contents($custom_dir);
@@ -32,10 +36,21 @@ function pmpro_pdf_template_editor_page_html(){
     }
 
     ?>
-    <div class="wrap">
+    <div class="pmpro-pdf-leave-notice">
+      <div class="pmrpro-pdf-leave-notice-inner">
+        <h4><?php _e('Unsaved Changes'); ?></h4>
+        <p>Some changes to your template have not been saved, would you like to save now?</p>
+        <div class='button_wrap'>
+          <button class="button cancel-btn">Leave without saving</button>
+          <button class="button button-primary accept-btn">Save Changes</button> 
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap pmpro-pdf-editor-wrap <?php echo !empty($pmpro_pdf_notice_shown) ? 'notice_present' : ''; ?>">
         <h2><?php _e('PMPro PDF Template Editor'); ?></h2>
 
-        <div style='text-align:right; margin-bottom: 10px;'>
+        <div class="pmpro-pdf-control-bar-top">
             <a class='button' href='?page=pmpro_pdf_invoices_license_key'>Close Editor</a> <button class='button button-primary save_template_btn'>Save Template</button>
         </div>
 
@@ -43,7 +58,7 @@ function pmpro_pdf_template_editor_page_html(){
             <?php echo $template_body; ?>
         </div>
 
-        <div style='text-align:right; margin-top: 10px;'>
+        <div class="pmpro-pdf-control-bar-bottom">
             <a class='button' href='?page=pmpro_pdf_invoices_license_key'>Close Editor</a> <button class='button button-primary save_template_btn'>Save Template</button>
         </div>
 
@@ -52,7 +67,11 @@ function pmpro_pdf_template_editor_page_html(){
             <textarea name='template_content' id='template_content'></textarea>
             <textarea name='template_addition_styles' id='template_addition_styles'></textarea>
         </form>
+
+        
     </div>
+
+
     <style>
     .gjs-am-file-uploader {
         display: none !important;
@@ -70,6 +89,7 @@ function pmpro_pdf_template_editor_page_html(){
 }
 
 function pmpro_pdf_template_editor_check_save(){
+    global $pmpro_pdf_notice_shown;
     if(isset($_POST['template_content'])){
         $html_content = str_replace('\\', '', $_POST['template_content']);
         $css_content =  strip_tags($_POST['template_addition_styles']);
@@ -86,8 +106,9 @@ function pmpro_pdf_template_editor_check_save(){
 
             file_put_contents($custom_dir, pmpro_pdf_temlate_editor_get_forced_css() .  $html_content);
 
+            $pmpro_pdf_notice_shown = true;
             ?>
-            <div class="notice notice-success">
+            <div class="notice notice-success pmpro_pdf_notice">
                 <p><?php _e('Template Saved!'); ?></p>
             </div>
             <?php
@@ -95,7 +116,7 @@ function pmpro_pdf_template_editor_check_save(){
               $redirectUrl = trim(strip_tags($_POST['redirect_on_save']));
               //We have a redirect passed in 
               ?>
-              <div class="notice notice-warning">
+              <div class="notice notice-warning pmpro_pdf_notice">
                   <p><?php _e('Please wait while we redirect you...'); ?></p>
               </div>
               <script>
@@ -105,8 +126,9 @@ function pmpro_pdf_template_editor_check_save(){
             }
 
         } catch(Exception $ex){
+            $pmpro_pdf_notice_shown = true;
             ?>
-            <div class="update-nag">
+            <div class="update-nag pmpro_pdf_notice">
                 <p><?php _e('Could not save Template'); ?></p>
             </div>
             <?php
