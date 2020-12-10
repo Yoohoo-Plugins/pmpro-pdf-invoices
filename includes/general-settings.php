@@ -105,7 +105,7 @@ function pmpro_pdf_invoice_settings_page() {
 		$api_params = array(
 			'edd_action' => 'activate_license',
 			'license'    => $license,
-			'item_id'    => YH_PLUGIN_ID, // The ID of the item in EDD
+			'item_id'    => PMPRO_PDF_PLUGIN_ID, // The ID of the item in EDD
 			'url'        => home_url()
 		);
 		// Call the custom API.
@@ -140,7 +140,7 @@ function pmpro_pdf_invoice_settings_page() {
 	$api_params = array(
 		'edd_action' => 'deactivate_license',
 		'license' => $license,
-		'item_id' => YH_PLUGIN_ID, // the name of our product in EDD
+		'item_id' => PMPRO_PDF_PLUGIN_ID, // the name of our product in EDD
 		'url' => home_url()
 	);
 	// Send the remote request
@@ -234,9 +234,9 @@ if (false !== $status && $status == 'valid') {
 										?>
 											<span class='rewrite_badge inactive'><strong><?php _e( 'Expired' ); ?></strong></span>
 										<?php
-									}
+									}	
 
-									if ( ! $expired ) {
+									if ( ! $expired && ! empty( $expires ) ) {
 										_e( sprintf( 'Expires on %s', $expires ) );
 									}
 								} else {
