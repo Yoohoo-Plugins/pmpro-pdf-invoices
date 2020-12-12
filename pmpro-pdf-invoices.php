@@ -114,6 +114,11 @@ function pmpropdf_attach_pdf_email( $attachments, $email ) {
 		return $attachments;
 	}
 
+	// Let developers decide if attach the pdf
+	if ( ! apply_filters( 'pmpropdf_can_attach_pdf_email', true, $email ) ) {
+		return $attachments;
+	}
+
 	// Make sure there is an order code available, otherwise get it from the user.
 	if ( empty( $email->data['order_code'] ) ) {
 		$user = get_user_by( "email", $email->data['user_email'] );
@@ -147,7 +152,10 @@ add_filter( 'pmpro_email_attachments', 'pmpropdf_attach_pdf_email', 10, 2 );
  * @since 1.5
  */
 function pmpropdf_added_order( $order ) {
-	pmpropdf_generate_pdf($order);
+	// Let developers decide if generate the pdf
+	if ( apply_filters( 'pmpropdf_can_generate_pdf_on_added_order', true, $order ) ) {
+		pmpropdf_generate_pdf($order);
+	}
 }
 add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
 
