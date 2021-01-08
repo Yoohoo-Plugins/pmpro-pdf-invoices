@@ -473,7 +473,7 @@ function pmpropdf_get_rewrite_token(){
  * Shortcode handler for the invoice list based on current user
 */
 function pmpropdf_download_list_shortcode_handler(){
-	$content = 'Please login to view this content';
+	$content = __( 'Please login to view this content', 'pmpro-pdf-invoices' );
 	if(function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
 		global $wpdb, $current_user;
 		$content = "";
