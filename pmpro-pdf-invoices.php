@@ -275,7 +275,7 @@ function pmpropdf_get_last_order( $user_id ) {
 }
 
 /**
- * Get specific order by its order ID
+ * Get specific order by its order code
  * Proxy of: pmpropdf_get_last_order
  */
 function pmpropdf_get_order_by_code( $order_code ) {
