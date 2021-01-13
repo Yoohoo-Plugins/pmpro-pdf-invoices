@@ -188,11 +188,11 @@ function pmpropdf_generate_pdf($order_data){
 
 	$payment_method = !empty( $order_data->gateway ) ? $order_data->gateway : __( 'N/A', 'pmpro-pdf-invoices');
 
-	$user_level_name = 'Unknown';
-	if(function_exists('pmpro_getMembershipLevelForUser')){
-		$user_level = pmpro_getMembershipLevelForUser($order_data->user_id);
-		if(!empty($user_level) && !empty($user_level->name)){
-			$user_level_name = $user_level->name;
+	$order_level_name = 'Unknown';
+	if(function_exists('pmpro_getLevel')){
+		$order_level = pmpro_getLevel($order_data->membership_id);
+		if(!empty($order_level) && !empty($order_level->name)){
+			$order_level_name = $order_level->name;
 		}
 	}
 
@@ -203,7 +203,7 @@ function pmpropdf_generate_pdf($order_data){
 	$replacements = array(
 		"{{invoice_code}}" => $order_data->code,
 		"{{user_email}}" => $user->data->user_email,
-		'{{membership_level}}' => $user_level_name,
+		'{{membership_level}}' => $order_level_name,
 		'{{billing_address}}' => $billing_details,
 		"{{payment_method}}" => $payment_method,
 		"{{total}}" => pmpro_formatPrice($order_data->total),
