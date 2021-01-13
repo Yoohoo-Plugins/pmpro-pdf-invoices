@@ -309,7 +309,7 @@ function pmpropdf_generate_invoice_name($order_code){
 	$invoice_prefix = apply_filters( 'pmpro_pdf_invoice_prefix', 'INV' );
 	$invoice_name = $invoice_prefix . $order_code . ".pdf";
 	
-	return apply_filters( 'pmpro_pdf_invoice_name', $invoice_name );
+	return apply_filters( 'pmpro_pdf_invoice_name', $invoice_name, $order_code );
 }
 
 /**
