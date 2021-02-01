@@ -306,7 +306,10 @@ function pmpropdf_get_invoice_directory_or_url($url = false){
  * Generates an invoice name from an order code
 */
 function pmpropdf_generate_invoice_name($order_code){
-	return apply_filters( 'pmpro_pdf_invoice_prefix', 'INV' ) . $order_code . ".pdf";
+	$invoice_prefix = apply_filters( 'pmpro_pdf_invoice_prefix', 'INV' );
+	$invoice_name = $invoice_prefix . $order_code . ".pdf";
+	
+	return apply_filters( 'pmpro_pdf_invoice_name', $invoice_name, $order_code );
 }
 
 /**
