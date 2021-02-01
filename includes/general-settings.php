@@ -105,7 +105,7 @@ function pmpro_pdf_invoice_settings_page() {
 		$api_params = array(
 			'edd_action' => 'activate_license',
 			'license'    => $license,
-			'item_id'    => YH_PLUGIN_ID, // The ID of the item in EDD
+			'item_id'    => PMPRO_PDF_PLUGIN_ID, // The ID of the item in EDD
 			'url'        => home_url()
 		);
 		// Call the custom API.
@@ -119,8 +119,8 @@ function pmpro_pdf_invoice_settings_page() {
 			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 		}
 
-		$status = $license_data->license;
-		$expires = ! empty( $license_data->expires ) ? $license_expires : '';
+		$status = sanitize_text_field( $license_data->license );
+		$expires = ! empty( $license_data->expires ) ? sanitize_text_field( $license_data->expires ) : '';
 
 		update_option( 'pmpro_pdf_invoice_license_status', $status );
 		update_option( 'pmpro_pdf_invoice_license_expires', $expires );
@@ -140,7 +140,7 @@ function pmpro_pdf_invoice_settings_page() {
 	$api_params = array(
 		'edd_action' => 'deactivate_license',
 		'license' => $license,
-		'item_id' => YH_PLUGIN_ID, // the name of our product in EDD
+		'item_id' => PMPRO_PDF_PLUGIN_ID, // the name of our product in EDD
 		'url' => home_url()
 	);
 	// Send the remote request
@@ -236,8 +236,8 @@ if (false !== $status && $status == 'valid') {
 										<?php
 									}
 
-									if ( ! $expired ) {
-										_e( sprintf( 'Expires on %s', $expires ) );
+									if ( ! $expired && ! empty ( $expires ) ) {
+										esc_html_e( sprintf( 'Expires on %s', $expires ) );
 									}
 								} else {
 									?>
