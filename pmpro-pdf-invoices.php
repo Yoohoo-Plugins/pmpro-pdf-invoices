@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.7
+ * Version: 1.8
  * License: GPL2 or later
  * Tested up to: 5.4
  * Requires PHP: 5.6
@@ -38,7 +38,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.7' );
+define( 'PMPRO_PDF_VERSION', '1.8' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -192,9 +192,9 @@ function pmpropdf_generate_pdf($order_data){
 	$date = isset( $order_data->timestamp) ? new DateTime( $order_data->timestamp ) : new DateTime();
 	$date = $date->format( "Y-m-d" );
 
-	$payment_method = !empty( $order_data->gateway ) ? $order_data->gateway : __( 'N/A', 'pmpro-pdf-invoices');
+	$payment_method = !empty( $order_data->gateway ) ? apply_filters( 'pmpro_pdf_gateway_string', $order_data->gateway ) : __( 'N/A', 'pmpro-pdf-invoices');
 
-	$order_level_name = 'Unknown';
+	$order_level_name = '';
 	if(function_exists('pmpro_getLevel')){
 		$order_level = pmpro_getLevel($order_data->membership_id);
 		if(!empty($order_level) && !empty($order_level->name)){

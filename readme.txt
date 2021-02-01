@@ -3,9 +3,9 @@ Contributors: andrewza, yoohooplugins
 Tags: pdf, pdf invoice, invoices
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4GC4JEZH7KSKL
 Requires at least: 4.5
-Tested up to: 5.4
+Tested up to: 5.6
 Requires PHP: 5.6
-Stable tag: trunk
+Stable tag: 1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,15 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+= 1.8 - 01-02-2021 =
+* Enhancement: Added in a filter to allow changing of the gateway name 'pmpro_pdf_gateway_string'
+* Enhancement: Localize and escape strings that were missing. @mircobabini
+* Enhancement: Added new filters 'pmpropdf_can_attach_pdf_email', 'pmpropdf_can_generate_pdf_on_added_order' and 'pmpro_pdf_invoice_name'. @mircobabini
+* Enhancement: Adjusted the formatting of the {{billing_details}} template. @mircobabini
+* Bug Fix/Enhancement: Get order level when generating templates instead of user's current level. @mircobabini
+* Bug Fix: Fixed an issue with license key expiration date output not showing correctly.
+* Bug Fix: Fixed issue where Yoohoo Plugins license key wasn't activating correctly.
+
 = 1.7 - 15-05-2020 =
 * Enhancement: Added fullscreen template editor
 * Enhancement: Added custom 'unsaved changes' prompt, removed browser dialog (Still used if custom prompt cannot be shown for any reason)
