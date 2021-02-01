@@ -114,6 +114,11 @@ function pmpropdf_attach_pdf_email( $attachments, $email ) {
 		return $attachments;
 	}
 
+	// Let developers decide if attach the pdf
+	if ( ! apply_filters( 'pmpropdf_can_attach_pdf_email', true, $email ) ) {
+		return $attachments;
+	}
+
 	// Make sure there is an order code available, otherwise get it from the user.
 	if ( empty( $email->data['order_code'] ) ) {
 		$user = get_user_by( "email", $email->data['user_email'] );
@@ -147,7 +152,10 @@ add_filter( 'pmpro_email_attachments', 'pmpropdf_attach_pdf_email', 10, 2 );
  * @since 1.5
  */
 function pmpropdf_added_order( $order ) {
-	pmpropdf_generate_pdf($order);
+	// Let developers decide if generate the pdf
+	if ( apply_filters( 'pmpropdf_can_generate_pdf_on_added_order', true, $order ) ) {
+		pmpropdf_generate_pdf($order);
+	}
 }
 add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
 
@@ -173,11 +181,9 @@ function pmpropdf_generate_pdf($order_data){
 	// Build the string for billing data.
 	if ( ! empty( $order_data->billing_name ) ) {
 		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
-		$billing_details .= "<p>" . $order_data->billing_name . "<br/>";
-		$billing_details .=  $order_data->billing_street . "<br/>";
-		$billing_details .= $order_data->billing_city . "<br/>";
-		$billing_details .= $order_data->billing_state . "<br/>";
-		$billing_details .= $order_data->billing_country . "<br/>";
+		$billing_details .= "<p>" . $order_data->billing_name . "<br>";
+		$billing_details .= $order_data->billing_street . "<br>";
+		$billing_details .= $order_data->billing_zip . " " . $order_data->billing_city . " (" . $order_data->billing_state . "), " . $order_data->billing_country . "<br>";
 		$billing_details .= $order_data->billing_phone . "</p>";
 	} else {
 		$billing_details = '';
@@ -188,11 +194,11 @@ function pmpropdf_generate_pdf($order_data){
 
 	$payment_method = !empty( $order_data->gateway ) ? $order_data->gateway : __( 'N/A', 'pmpro-pdf-invoices');
 
-	$user_level_name = 'Unknown';
-	if(function_exists('pmpro_getMembershipLevelForUser')){
-		$user_level = pmpro_getMembershipLevelForUser($order_data->user_id);
-		if(!empty($user_level) && !empty($user_level->name)){
-			$user_level_name = $user_level->name;
+	$order_level_name = 'Unknown';
+	if(function_exists('pmpro_getLevel')){
+		$order_level = pmpro_getLevel($order_data->membership_id);
+		if(!empty($order_level) && !empty($order_level->name)){
+			$order_level_name = $order_level->name;
 		}
 	}
 
@@ -203,7 +209,7 @@ function pmpropdf_generate_pdf($order_data){
 	$replacements = array(
 		"{{invoice_code}}" => $order_data->code,
 		"{{user_email}}" => $user->data->user_email,
-		'{{membership_level}}' => $user_level_name,
+		'{{membership_level}}' => $order_level_name,
 		'{{billing_address}}' => $billing_details,
 		"{{payment_method}}" => $payment_method,
 		"{{total}}" => pmpro_formatPrice($order_data->total),
@@ -275,7 +281,7 @@ function pmpropdf_get_last_order( $user_id ) {
 }
 
 /**
- * Get specific order by its order ID
+ * Get specific order by its order code
  * Proxy of: pmpropdf_get_last_order
  */
 function pmpropdf_get_order_by_code( $order_code ) {
@@ -306,7 +312,10 @@ function pmpropdf_get_invoice_directory_or_url($url = false){
  * Generates an invoice name from an order code
 */
 function pmpropdf_generate_invoice_name($order_code){
-	return apply_filters( 'pmpro_pdf_invoice_prefix', 'INV' ) . $order_code . ".pdf";
+	$invoice_prefix = apply_filters( 'pmpro_pdf_invoice_prefix', 'INV' );
+	$invoice_name = $invoice_prefix . $order_code . ".pdf";
+	
+	return apply_filters( 'pmpro_pdf_invoice_name', $invoice_name, $order_code );
 }
 
 /**
@@ -473,7 +482,7 @@ function pmpropdf_get_rewrite_token(){
  * Shortcode handler for the invoice list based on current user
 */
 function pmpropdf_download_list_shortcode_handler(){
-	$content = 'Please login to view this content';
+	$content = __( 'Please login to view this content', 'pmpro-pdf-invoices' );
 	if(function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
 		global $wpdb, $current_user;
 		$content = "";
