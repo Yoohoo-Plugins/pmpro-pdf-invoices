@@ -119,8 +119,8 @@ function pmpro_pdf_invoice_settings_page() {
 			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 		}
 
-		$status = $license_data->license;
-		$expires = ! empty( $license_data->expires ) ? $license_expires : '';
+		$status = sanitize_text_field( $license_data->license );
+		$expires = ! empty( $license_data->expires ) ? sanitize_text_field( $license_data->expires ) : '';
 
 		update_option( 'pmpro_pdf_invoice_license_status', $status );
 		update_option( 'pmpro_pdf_invoice_license_expires', $expires );
