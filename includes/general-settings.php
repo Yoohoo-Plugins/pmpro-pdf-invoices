@@ -262,7 +262,8 @@ if (false !== $status && $status == 'valid') {
 									<?php } ?>
 								</td>
 							</tr>
-						<?php } ?>
+						<?php } ?>						
+
 					</tbody>
 				</table>
 				<?php submit_button(); ?>
@@ -305,6 +306,33 @@ if (false !== $status && $status == 'valid') {
 				<small><em>Please leave this window open while processing</em></small>
 				<br><br>
 				<button class='button generate_missing_logs'>Generate</button>
+				<?php
+
+				$user_id = get_current_user_id();
+						if( ( !empty( $_SERVER['SERVER_SOFTWARE'] ) && strpos( $_SERVER['SERVER_SOFTWARE'], 'nginx' ) !== false ) ){
+
+							$upload_dir = wp_upload_dir();
+
+							$baseurl = str_replace( site_url(), '', $upload_dir['baseurl'] );
+
+							$invoice_dir = $baseurl . '/pmpro-invoices/';
+
+							$access_key = pmpropdf_get_rewrite_token();
+						
+							?>
+							<br/><br/>
+							<div class="">
+								<strong><?php _e('Nginx Detected', 'pmpro-pdf-invoices'); ?></strong>
+								<p><?php _e('We detected that your installation is running on Nginx. To protect generated invoices that are stored on your web server, the following Nginx rule should be added to your Nginx WordPress installation config file.', 'pmpro-pdf-invoices' ); ?></p>
+								<p><code>
+									location <?php echo $invoice_dir; ?> {
+										if ($query_string  !~ "access=<?php echo $access_key; ?>"){
+											return 403;
+									  	}
+									}			
+								</code></p>
+							</div>
+					<?php } ?>
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='2'>

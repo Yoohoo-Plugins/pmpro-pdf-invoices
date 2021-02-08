@@ -637,9 +637,13 @@ function pmpropdf_footer_note ($footnote){
 add_filter('admin_footer_text', 'pmpropdf_footer_note', 10, 1);
 
 function pmpropdf_nginx_notice () {
+
 	$user_id = get_current_user_id();
 
-	if( current_user_can( 'manage_options' ) && intval( get_user_meta( $user_id, 'pmpropdf_nginx_dismissed', true ) ) == false ){
+	if( current_user_can( 'manage_options' ) && 
+		intval( get_user_meta( $user_id, 'pmpropdf_nginx_dismissed', true ) ) == false &&
+		( !empty( $_SERVER['SERVER_SOFTWARE'] ) && strpos( $_SERVER['SERVER_SOFTWARE'], 'nginx' ) !== false ) 
+	){
 
 		$upload_dir = wp_upload_dir();
 
