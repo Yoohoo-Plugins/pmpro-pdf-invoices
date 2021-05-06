@@ -12,10 +12,14 @@ function pmpro_pdf_invoice_settings_page() {
 	}
 
 	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'reset_template'){
-		$custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
-    	if(file_exists($custom_dir)){
-			unlink($custom_dir);
-			pmpro_pdf_admin_notice( 'Template file reset.', 'success is-dismissible' );
+		$upload_dir = wp_upload_dir();
+		if(!empty($upload_dir) && !empty($upload_dir['basedir'])){
+			$template_dir = $upload_dir['basedir'] . '/pmpro-invoice-templates/order.html';
+			if(file_exists($template_dir)){
+
+				unlink($template_dir);
+				pmpro_pdf_admin_notice( 'Template file reset.', 'success is-dismissible' );
+			}
 		}
 	}
 
@@ -30,11 +34,14 @@ function pmpro_pdf_invoice_settings_page() {
 	        try{
 	        	$template_body = file_get_contents( PMPRO_PDF_DIR . '/templates/' . $template_selected . '.html' );
 
-	            if(!file_exists(get_stylesheet_directory() . '/pmpro-pdf-invoices')){
-	                mkdir(get_stylesheet_directory() . '/pmpro-pdf-invoices', 0777, true);
+	            $upload_dir = wp_upload_dir();
+	            $template_dir = $upload_dir['basedir'] . '/pmpro-invoice-templates/';
+
+	            if(!file_exists( $template_dir )){
+	              mkdir( $template_dir, 0777, true );
 	            }
 
-	            $custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
+	            $custom_dir = $template_dir . "order.html";
 
 	            file_put_contents($custom_dir, pmpro_pdf_temlate_editor_get_forced_css() .  $template_body);
 
@@ -161,6 +168,7 @@ function pmpro_pdf_invoice_settings_page() {
 if(isset($_POST['pmpropdf_save_settings'])){
 	$logo_url = !empty($_POST['logo_url']) ? strip_tags($_POST['logo_url']) : '';
 	update_option(PMPRO_PDF_LOGO_URL, $logo_url);
+	update_option(PMPRO_PDF_ADMIN_EMAILS, (!empty($_POST['admin_emails']) ? true : false));
 }
 
 if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'insert_account_shortcode'){
@@ -182,6 +190,7 @@ if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'insert_account_shortco
 }
 
 $logo_url = get_option(PMPRO_PDF_LOGO_URL, '');
+$admin_emails = get_option(PMPRO_PDF_ADMIN_EMAILS, false);
 
 //Generate a license tab badge class
 $license_tab_badge = '';
@@ -234,7 +243,7 @@ if (false !== $status && $status == 'valid') {
 										?>
 											<span class='rewrite_badge inactive'><strong><?php _e( 'Expired' ); ?></strong></span>
 										<?php
-									}
+									}	
 
 									if ( ! $expired && ! empty ( $expires ) ) {
 										esc_html_e( sprintf( 'Expires on %s', $expires ) );
@@ -278,10 +287,14 @@ if (false !== $status && $status == 'valid') {
 				<?php
 				$template_notice = 'It appears you do not have a custom template set up.';
 				$template_button = 'Create Template';
-				$custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
-    			if(file_exists($custom_dir)){
-    				$template_notice = 'You are using a custom template.';
-    				$template_button = 'Edit Template';
+
+				$upload_dir = wp_upload_dir();
+				if(!empty($upload_dir) && !empty($upload_dir['basedir'])){
+					$custom_dir = $upload_dir['basedir'] . '/pmpro-invoice-templates/order.html';
+					if(file_exists($custom_dir)){
+    					$template_notice = 'You are using a custom template.';
+    					$template_button = 'Edit Template';
+    				}
     			}
     			?>
 				<small><?php echo $template_notice; ?></small>
@@ -321,7 +334,7 @@ if (false !== $status && $status == 'valid') {
 						
 							?>
 							<br/><br/>
-							<div class="">
+							<div class="pmpro-pdf-invoices-nginx-notice">
 								<strong><?php _e('Nginx Detected', 'pmpro-pdf-invoices'); ?></strong>
 								<p><?php _e('We detected that your installation is running on Nginx. To protect generated invoices that are stored on your web server, the following Nginx rule should be added to your Nginx WordPress installation config file.', 'pmpro-pdf-invoices' ); ?></p>
 								<p><code>
@@ -333,6 +346,15 @@ if (false !== $status && $status == 'valid') {
 								</code></p>
 							</div>
 					<?php } ?>
+
+				<br><br>
+				<strong>Archives</strong>
+				
+				<br><br>
+				<a class='button download_zip_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=download_zip_archive'>ZIP & Download</a>
+				
+				<br><br>
+				<small><em>Click the button above to download all stored invoices as a ZIP file. Alternatively individual files can be downloaded from the orders page</em></small>
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='2'>
@@ -361,6 +383,11 @@ if (false !== $status && $status == 'valid') {
 
 					<input id='logo_url' name='logo_url' type='hidden' value='<?php echo $logo_url; ?>' />
 
+					<strong>Emails</strong>
+					<br>
+					<label style="padding-top: 10px; display: block"><input type="checkbox" name="admin_emails" <?php echo !empty($admin_emails) ? 'checked' : ''; ?>> <small>Attach PDF's to admin checkout emails</small></label>
+
+					<br><br>
 					<input type='submit' class='button button-primary' name='pmpropdf_save_settings' value='Save Settings'>
 				</form>
 			</div>

@@ -28,12 +28,7 @@ function pmpro_pdf_temaplte_editor_enqueues(){
 
 function pmpro_pdf_template_editor_page_html(){
     global $pmpro_pdf_notice_shown;
-    $custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
-    if(file_exists($custom_dir)){
-        $template_body = file_get_contents($custom_dir);
-    } else {
-        $template_body = file_get_contents( PMPRO_PDF_DIR . '/templates/order.html' );
-    }
+    $template_body = pmpropdf_get_order_template_html();
 
     ?>
     <div class="pmpro-pdf-leave-notice">
@@ -98,12 +93,14 @@ function pmpro_pdf_template_editor_check_save(){
         $html_content .= "<style>$css_content</style>";
 
         try{
-            if(!file_exists(get_stylesheet_directory() . '/pmpro-pdf-invoices')){
-                mkdir(get_stylesheet_directory() . '/pmpro-pdf-invoices', 0777, true);
+            $upload_dir = wp_upload_dir();
+            $template_dir = $upload_dir['basedir'] . '/pmpro-invoice-templates/';
+
+            if(!file_exists( $template_dir )){
+              mkdir( $template_dir, 0777, true );
             }
 
-            $custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
-
+            $custom_dir = $template_dir . 'order.html';
             file_put_contents($custom_dir, pmpro_pdf_temlate_editor_get_forced_css() .  $html_content);
 
             $pmpro_pdf_notice_shown = true;
