@@ -680,6 +680,54 @@ function pmpropdf_footer_note ($footnote){
  
 add_filter('admin_footer_text', 'pmpropdf_footer_note', 10, 1);
 
+
+function pmpropdf_nginx_notice () {
+
+	$user_id = get_current_user_id();
+
+	if( current_user_can( 'manage_options' ) && 
+		intval( get_user_meta( $user_id, 'pmpropdf_nginx_dismissed', true ) ) == false &&
+		( !empty( $_SERVER['SERVER_SOFTWARE'] ) && strpos( $_SERVER['SERVER_SOFTWARE'], 'nginx' ) !== false ) 
+	){
+
+		$upload_dir = wp_upload_dir();
+
+		$baseurl = str_replace( site_url(), '', $upload_dir['baseurl'] );
+
+		$invoice_dir = $baseurl . '/pmpro-invoices/';
+
+		$access_key = pmpropdf_get_rewrite_token();
+	
+		?>
+		<div class="updated">
+			<h2><?php _e('Paid Memberships Pro - PDF Invoices - Nginx Detected', 'pmpro-pdf-invoices'); ?></h2>
+			<p><?php _e('We detected that your installation is running on Nginx. To protect generated invoices that are stored on your web server, the following Nginx rule should be added to your Nginx WordPress installation config file.', 'pmpro-pdf-invoices' ); ?></p>
+			<p><code>
+				location <?php echo $invoice_dir; ?> {
+					if ($query_string  !~ "access=<?php echo $access_key; ?>"){
+						return 403;
+				  	}
+				}			
+			</code></p>
+			<p><a class='button button-primary' id="pmpropdf_nginx_prompt" href="<?php echo admin_url( '?pmpropdf_nginx=dismiss' ); ?>"><?php _e("I've Added The Nginx Rule", "pmpro-pdf-invoices"); ?></a></p>
+		</div>
+		<?php
+	}
+}
+add_action( 'admin_notices', 'pmpropdf_nginx_notice' );
+
+function pmpropdf_dismiss_nginx_notice(){
+
+	if( !empty( $_REQUEST['pmpropdf_nginx'] ) && $_REQUEST['pmpropdf_nginx'] == 'dismiss' ){
+		if( current_user_can( 'manage_options' ) ){
+			$user_id = get_current_user_id();
+			update_user_meta( $user_id, 'pmpropdf_nginx_dismissed', 1 );
+		}
+	}
+
+}
+add_action( 'admin_init', 'pmpropdf_dismiss_nginx_notice' );
+
 /**
  * Get the template content
  *
@@ -767,3 +815,4 @@ function pmpropdf_updated_order( $order ) {
 	}
 }
 add_action( 'pmpro_updated_order', 'pmpropdf_updated_order', 99, 1);
+
