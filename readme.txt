@@ -25,6 +25,19 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+
+= 1.9 - 10-05-2021 =
+* Enhancement: Changed custom template storage path to make use of the uploads directory instead (Directory: pmpro-invoice-templates/order.html)
+* Enhancement: Added automated migration for custom templates from child theme directory to the uploads directory, automatically deletes original 
+* Enhancement: Improved tempalte content retrieval functionality and path generation
+* Enhancement: Added auto-regeneration when order is updated. Can be controlled by filter
+* Enhancement: Added option to enabled admin checkout email attachments
+* Enhancement: Added tool to allow administrators to download a ZIP file of all stored invoices
+* Bug Fix/Enhancement: Auto delete ZIP files once downloaded by end user
+* Bug Fix: Improved date processing for order data, is some cases DateTime constructor would fail, causing invoice generation to fail. Fallbacks in place for this now
+* Bug Fix: Improved error handling in general to improve how gracefully errors are handled during creation of PDF documents
+* Bug Fix: Added Exception/Error catches to the bulk regeneration ajax loop, to be used with graceful error output
+
 = 1.8 - 01-02-2021 =
 * Enhancement: Added in a filter to allow changing of the gateway name 'pmpro_pdf_gateway_string'
 * Enhancement: Localize and escape strings that were missing. @mircobabini

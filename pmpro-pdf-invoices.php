@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.8
+ * Version: 1.9
  * License: GPL2 or later
  * Tested up to: 5.4
  * Requires PHP: 5.6
@@ -38,11 +38,12 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.8' );
+define( 'PMPRO_PDF_VERSION', '1.9' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
 define( 'PMPRO_PDF_REWRITE_TOKEN', 'PMPRO_PDF_REWRITE_TOKEN');
+define( 'PMPRO_PDF_ADMIN_EMAILS', 'PMPRO_PDF_ADMIN_EMAILS');
 
 // Include the template editor page/functions
 include PMPRO_PDF_DIR . '/includes/template-editor.php';
@@ -104,8 +105,10 @@ include( PMPRO_PDF_DIR . '/includes/dompdf/autoload.inc.php' );
  * Return new attachments array to the PMPro email attachment hook
 */
 function pmpropdf_attach_pdf_email( $attachments, $email ) {
+	$admin_emails = get_option(PMPRO_PDF_ADMIN_EMAILS, false);
+
 	// Let's not send it to admins
-	if( strpos( $email->template, "admin" ) !== false ){
+	if( strpos( $email->template, "admin" ) !== false && empty($admin_emails)){
 		return $attachments;
 	}
 
@@ -169,14 +172,7 @@ function pmpropdf_generate_pdf($order_data){
 
 	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
 
-	$custom_dir = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
-	if ( file_exists( $custom_dir ) ) {
-		$body = file_get_contents( $custom_dir );
-	} else {
-		$body = file_get_contents( PMPRO_PDF_DIR . '/templates/order.html' );
-	}
-
-
+	$body = pmpropdf_get_order_template_html();
 
 	// Build the string for billing data.
 	if ( ! empty( $order_data->billing_name ) ) {
@@ -189,8 +185,14 @@ function pmpropdf_generate_pdf($order_data){
 		$billing_details = '';
 	}
 
-	$date = isset( $order_data->timestamp) ? new DateTime( $order_data->timestamp ) : new DateTime();
-	$date = $date->format( "Y-m-d" );
+	try{
+		$date = isset( $order_data->timestamp) ? new DateTime( $order_data->timestamp ) : new DateTime();
+		$date = $date->format( "Y-m-d" );
+	} catch(Exception $e) {
+		$date = isset( $order_data->timestamp) ? date('Y-m-d', $order_data->timestamp) : date('Y-m-d');
+	} catch(Error $e){
+		$date = isset( $order_data->timestamp) ? date('Y-m-d', $order_data->timestamp) : date('Y-m-d');
+	}
 
 	$payment_method = !empty( $order_data->gateway ) ? apply_filters( 'pmpro_pdf_gateway_string', $order_data->gateway ) : __( 'N/A', 'pmpro-pdf-invoices');
 
@@ -339,28 +341,33 @@ function pmpropdf_get_order_batch($batch_size = 100, $batch_no = 0){
  * Skip it if we have this invoice already created
 */
 function pmpropdf_process_batch($batch_size = 100, $batch_no = 0){
-	$invoice_dir = pmpropdf_get_invoice_directory_or_url();
-
 	$output_array = array(
 		'skipped' => 0,
 		'created' => 0,
 		'batch_no' => $batch_no,
 		'batch_count' => 0
 	);
+	try{
+		$invoice_dir = pmpropdf_get_invoice_directory_or_url();
 
-	$batch = pmpropdf_get_order_batch($batch_size, $batch_no);
-	foreach ($batch as $order_data) {
-		$invoice_name = pmpropdf_generate_invoice_name($order_data->code);
+		$batch = pmpropdf_get_order_batch($batch_size, $batch_no);
+		foreach ($batch as $order_data) {
+			$invoice_name = pmpropdf_generate_invoice_name($order_data->code);
 
-		if(file_exists($invoice_dir . $invoice_name)){
-			$output_array['skipped'] += 1;
-		} else {
-			$path = pmpropdf_generate_pdf($order_data);
-			$output_array['created'] += 1;
+			if(file_exists($invoice_dir . $invoice_name)){
+				$output_array['skipped'] += 1;
+			} else {
+				$path = pmpropdf_generate_pdf($order_data);
+				$output_array['created'] += 1;
+			}
 		}
-	}
 
-	$output_array['batch_count'] = count($batch);
+		$output_array['batch_count'] = count($batch);
+	} catch (Exception $ex){
+		$output_array['error'] = "An unexpected error occurred, we were not able to complete PDF generation";
+	} catch (Error $err){
+		$output_array['error'] = "An unexpected error occurred, we were not able to complete PDF generation";
+	}
 
 	return $output_array;
 }
@@ -619,6 +626,43 @@ function pmpropdf_check_should_zip(){
 						header('Content-disposition: attachment; filename='.$archive_name);
 						header('Content-Length: ' . filesize($archive_name));
 						readfile($archive_name);
+
+						@unlink($archive_name);
+					}
+				}
+			}
+		}
+	} else if (!empty($_GET['page']) && !empty($_GET['sub_action'])){
+		if($_GET['page'] === 'pmpro_pdf_invoices_license_key' && $_GET['sub_action'] === 'download_zip_archive'){
+			/* This is an admin download, processes here for the sake of header output */
+			if(current_user_can('administrator') && class_exists('ZipArchive')){
+				$invoice_dir = pmpropdf_get_invoice_directory_or_url();
+				if(file_exists($invoice_dir)){
+					$files = scandir($invoice_dir); 
+					$pdfs = array();
+					foreach ($files as $file) {
+						if(strpos($file, '.pdf') !== FALSE){
+							$pdfs[] = pmpropdf_get_invoice_directory_or_url() . $file;
+						}
+					}
+					
+					if(!empty($pdfs)){
+						$archive_name = 'invoices_archive_' . time() . '.zip';
+						$archive = new ZipArchive;
+						if($archive->open($archive_name, ZipArchive::CREATE) === TRUE){
+							foreach ($pdfs as $path) {
+								$archive->addFromString(basename($path), file_get_contents($path));
+							}
+							$archive->close();
+
+							/** Send the headers and file data to the browser */
+							header('Content-Type: application/zip');
+							header('Content-disposition: attachment; filename='.$archive_name);
+							header('Content-Length: ' . filesize($archive_name));
+							readfile($archive_name);
+
+							@unlink($archive_name);
+						}
 					}
 				}
 			}
@@ -635,3 +679,91 @@ function pmpropdf_footer_note ($footnote){
 }
  
 add_filter('admin_footer_text', 'pmpropdf_footer_note', 10, 1);
+
+/**
+ * Get the template content
+ *
+ * Helper function to standardize body content retrieval, also should help with any automated migration
+ *
+ * @since 1.9
+*/
+function pmpropdf_get_order_template_html(){
+	pmpropdf_migrate_custom_template(); 
+	
+	$path = pmpropdf_get_order_template_path();
+	if(!empty($path) && file_exists($path)){
+		return file_get_contents($path);		
+	}
+	return "";
+}
+
+/**
+ * Get the template path
+ *
+ * Helper function to standardize path generation and testing for the template file
+ *
+ * @since 1.9
+*/
+function pmpropdf_get_order_template_path(){
+	$path = PMPRO_PDF_DIR . '/templates/order.html';
+	$upload_dir = wp_upload_dir();
+	if(!empty($upload_dir) && !empty($upload_dir['basedir'])){
+		$template_dir = $upload_dir['basedir'] . '/pmpro-invoice-templates/order.html';
+		if(file_exists($template_dir)){
+			$path = $template_dir;
+		}
+	}
+	return apply_filters("pmpro_order_template_path", $path);
+}
+
+/**
+ * Helper for migrating existing custom templates to the uploads directory
+ *
+ * This automated process should help prevent any template data loss
+ *
+ * @since 1.9
+*/
+function pmpropdf_migrate_custom_template(){
+	$legacy_path = get_stylesheet_directory() . "/pmpro-pdf-invoices/order.html";
+	if(file_exists($legacy_path)){
+		$legacy_content = file_get_contents($legacy_path);
+
+		$upload_dir = wp_upload_dir();
+		$template_dir = $upload_dir['basedir'] . '/pmpro-invoice-templates/';
+
+		if(!file_exists( $template_dir )){
+			mkdir( $template_dir, 0777, true );
+		}
+
+		if(!file_exists($template_dir . 'order.html')){
+			try{
+				file_put_contents($template_dir . 'order.html', $legacy_content);
+			} catch (Exception $ex){
+				//Silence
+			}
+		}
+		
+		@unlink($legacy_path);
+	} 
+}
+
+/**
+ * Regenerate PDF invoice when an order is updated
+ *
+ * @since 1.9
+ */
+function pmpropdf_updated_order( $order ) {
+	// Let developers decide if generate the pdf
+
+	if ( apply_filters( 'pmpropdf_can_regenerate_pdf_on_added_order', true, $order ) ) {
+		$invoice_dir = pmpropdf_get_invoice_directory_or_url();
+		$invoice_name = pmpropdf_generate_invoice_name($order->code);
+
+		if(file_exists($invoice_dir . $invoice_name)){
+			unlink($invoice_dir . $invoice_name);
+		}
+
+		$path = pmpropdf_generate_pdf($order);
+	}
+}
+add_action( 'pmpro_updated_order', 'pmpropdf_updated_order', 99, 1);
