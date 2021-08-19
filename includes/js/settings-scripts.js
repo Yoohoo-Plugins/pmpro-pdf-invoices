@@ -82,23 +82,27 @@ function pmpropdf_ajax_batch_loop(batch_size, batch_no){
         success : function( response ) {
             response = JSON.parse(response);
 
-            pmpropdf_js.batch_process.total_count += typeof response.batch_count !== 'undefined' ? response.batch_count : 0;
-            pmpropdf_js.batch_process.total_created += typeof response.created !== 'undefined' ? response.created : 0;
-            pmpropdf_js.batch_process.total_skipped += typeof response.skipped !== 'undefined' ? response.skipped : 0;
+            if(typeof response.error !== 'undefined'){
+                jQuery('.missing_invoice_log').html("").append('<div class="item">' + response.error + '</div>');
+            } else {
+                pmpropdf_js.batch_process.total_count += typeof response.batch_count !== 'undefined' ? response.batch_count : 0;
+                pmpropdf_js.batch_process.total_created += typeof response.created !== 'undefined' ? response.created : 0;
+                pmpropdf_js.batch_process.total_skipped += typeof response.skipped !== 'undefined' ? response.skipped : 0;
 
-            pmpropdf_update_batch_stats();
+                pmpropdf_update_batch_stats();
 
-            if(typeof response.batch_no !== 'undefined' && typeof response.batch_count !== 'undefined'){
-                if(response.batch_count >= batch_size){
-                    //Iterate another loop
-                    jQuery('.missing_invoice_log').append('<div class="item">Processing...</div>');
-                    pmpropdf_ajax_batch_loop(batch_size, response.batch_no+1);
-                } else {
-                    //Show complete message
-                    if(pmpropdf_js.batch_process.total_created == 0){
-                        jQuery('.missing_invoice_log').append('<div class="item">No missing invoices!</div>');
+                if(typeof response.batch_no !== 'undefined' && typeof response.batch_count !== 'undefined'){
+                    if(response.batch_count >= batch_size){
+                        //Iterate another loop
+                        jQuery('.missing_invoice_log').append('<div class="item">Processing...</div>');
+                        pmpropdf_ajax_batch_loop(batch_size, response.batch_no+1);
                     } else {
-                        jQuery('.missing_invoice_log').append('<div class="item">Processing Complete!</div>');
+                        //Show complete message
+                        if(pmpropdf_js.batch_process.total_created == 0){
+                            jQuery('.missing_invoice_log').append('<div class="item">No missing invoices!</div>');
+                        } else {
+                            jQuery('.missing_invoice_log').append('<div class="item">Processing Complete!</div>');
+                        }
                     }
                 }
             }
