@@ -248,6 +248,9 @@ function pmpropdf_generate_pdf($order_data){
 	} catch (Exception $ex){
 		return false;
 	}
+		
+	do_action( 'pmpropdf_generated_pdf_invoice', $order_data->id, $path );
+
 	return $path;
 }
 
