@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.9
+ * Version: 1.9.1
  * License: GPL2 or later
  * Tested up to: 5.4
  * Requires PHP: 5.6
@@ -38,7 +38,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.9' );
+define( 'PMPRO_PDF_VERSION', '1.9.1' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -177,6 +177,12 @@ add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
  * As well as the batch processing tool
 */
 function pmpropdf_generate_pdf($order_data){
+
+	// Stop PDF from generating in certain cases.
+	if ( ! apply_filters( 'pmpropdf_should_generate_pdf', true, $order_data ) ) {
+		return;
+	}
+
 	$user = get_user_by('ID', $order_data->user_id);
 
 	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
@@ -828,7 +834,6 @@ function pmpropdf_migrate_custom_template(){
  */
 function pmpropdf_updated_order( $order ) {
 	// Let developers decide if generate the pdf
-
 	if ( apply_filters( 'pmpropdf_can_regenerate_pdf_on_added_order', true, $order ) ) {
 		$invoice_dir = pmpropdf_get_invoice_directory_or_url();
 		$invoice_name = pmpropdf_generate_invoice_name($order->code);
@@ -841,4 +846,3 @@ function pmpropdf_updated_order( $order ) {
 	}
 }
 add_action( 'pmpro_updated_order', 'pmpropdf_updated_order', 99, 1);
-
