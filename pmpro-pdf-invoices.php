@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.9
+ * Version: 1.9.1
  * License: GPL2 or later
  * Tested up to: 5.4
  * Requires PHP: 5.6
@@ -38,7 +38,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.9' );
+define( 'PMPRO_PDF_VERSION', '1.9.1' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -157,7 +157,16 @@ add_filter( 'pmpro_email_attachments', 'pmpropdf_attach_pdf_email', 10, 2 );
 function pmpropdf_added_order( $order ) {
 	// Let developers decide if generate the pdf
 	if ( apply_filters( 'pmpropdf_can_generate_pdf_on_added_order', true, $order ) ) {
-		pmpropdf_generate_pdf($order);
+		$last_order = pmpropdf_get_order_by_code( $order->code );
+
+		// Bail if order is empty / doesn't exist.
+		// We do this early to avoid initializing the DomPDF library if it is unneeded
+		if ( empty( $last_order[0] ) ) {
+			return;
+		}
+
+		$order_data = $last_order[0];
+		pmpropdf_generate_pdf( $order_data );
 	}
 }
 add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
@@ -168,6 +177,12 @@ add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
  * As well as the batch processing tool
 */
 function pmpropdf_generate_pdf($order_data){
+
+	// Stop PDF from generating in certain cases.
+	if ( ! apply_filters( 'pmpropdf_should_generate_pdf', true, $order_data ) ) {
+		return;
+	}
+
 	$user = get_user_by('ID', $order_data->user_id);
 
 	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
@@ -493,66 +508,80 @@ function pmpropdf_get_rewrite_token(){
 */
 function pmpropdf_download_list_shortcode_handler(){
 	$content = __( 'Please login to view this content', 'pmpro-pdf-invoices' );
-	if(function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
+	if ( function_exists('pmpro_hasMembershipLevel' ) && pmpro_hasMembershipLevel() ) {
 		global $wpdb, $current_user;
 		$content = "";
 
-		$limit = apply_filters( 'pmpropdf_invoice_table_limit', 15 );
+	// return if a pmpro core function is missing
+	if( ! function_exists('pmpro_hasMembershipLevel') ){
+		return $content;
+	}
 
-		$invoices = $wpdb->get_results("
-			SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
-			FROM $wpdb->pmpro_membership_orders
-			WHERE user_id = '$current_user->ID'
-			AND status NOT
-			IN('review', 'token', 'error')
-			ORDER BY timestamp DESC LIMIT " . $limit
-		);
+	// return if invoice table list is only for users with an active membership
+	if( apply_filters( 'pmpropdf_invoice_table_requires_active_membership', true ) && ! pmpro_hasMembershipLevel() ) {
+		$content = __( 'Please login to view this content', 'pmpro-pdf-invoices' );
 
-		if(!empty($invoices)){
-			foreach ($invoices as $key => $invoice) {
-				$invoice_id = $invoice->id;
-				$invoice = new MemberOrder;
-				$invoice->getMemberOrderByID($invoice_id);
-				$invoice->getMembershipLevel();
+		return $content;
+	}
 
-				$membership_level = $invoice->membership_level->name;
+	global $wpdb, $current_user;
 
-				if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
-					$content .= '<tr>';
-					$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
-					$content .=		'<td>' . $membership_level . '</td>';
-					$content .=		'<td>' . pmpro_formatPrice($invoice->total) . '</td>';
-					$content .= 	'<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $invoice->code ) ). '">' . pmpropdf_generate_invoice_name( $invoice->code ) .'</a></td>';
-					$content .= '</tr>';
-				}
+	$limit = apply_filters( 'pmpropdf_invoice_table_limit', 15 );
+
+	$invoices = $wpdb->get_results("
+		SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
+		FROM $wpdb->pmpro_membership_orders
+		WHERE user_id = '$current_user->ID'
+		AND status NOT
+		IN('review', 'token', 'error')
+		ORDER BY timestamp DESC LIMIT " . $limit
+	);
+
+	if(!empty($invoices)){
+		foreach ($invoices as $key => $invoice) {
+			$invoice_id = $invoice->id;
+			$invoice = new MemberOrder;
+			$invoice->getMemberOrderByID($invoice_id);
+			$invoice->getMembershipLevel();
+
+			$membership_level = $invoice->membership_level->name;
+
+			if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
+				$content .= '<tr>';
+				$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
+				$content .=		'<td>' . $membership_level . '</td>';
+				$content .=		'<td>' . pmpro_formatPrice($invoice->total) . '</td>';
+				$content .= 	'<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $invoice->code ) ). '">' . pmpropdf_generate_invoice_name( $invoice->code ) .'</a></td>';
+				$content .= '</tr>';
 			}
 		}
-
-		if(!empty($content)){
-			$table_content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
-			$table_content .= "<table width='100%'' cellpadding='0' cellspacing='0' border='0'>";
-			$table_content .= 	"<thead>";
-			$table_content .= 		"<tr>";
-			$table_content .= 			"<th>" . __("Date", 'paid-memberships-pro' ) . "</th>";
-			$table_content .= 			"<th>" . __("Level", 'paid-memberships-pro' ) . "</th>";
-			$table_content .= 			"<th>" . __("Amount", 'paid-memberships-pro' ) . "</th>";
-			$table_content .= 			"<th>" . __("Download", 'paid-memberships-pro' ) . "</th>";
-			$table_content .= 		"</tr>";
-			$table_content .= 	"</thead>";
-			$table_content .= 	"<tbody>";
-			$table_content .= 		$content;
-			$table_content .= 	"</tbody>";
-			$table_content .= "</table>";
-
-			return $table_content;
-
-		} else {
-			$content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
-			$content .= "<div><em>" . __("No PDF invoices found...", 'pmpro-pdf-invoices' ) . "</em></div>";
-		}
 	}
-	return $content;
 
+	if(!empty($content)){
+		$table_content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
+		$table_content .= "<table width='100%'' cellpadding='0' cellspacing='0' border='0'>";
+		$table_content .= 	"<thead>";
+		$table_content .= 		"<tr>";
+		$table_content .= 			"<th>" . __("Date", 'paid-memberships-pro' ) . "</th>";
+		$table_content .= 			"<th>" . __("Level", 'paid-memberships-pro' ) . "</th>";
+		$table_content .= 			"<th>" . __("Amount", 'paid-memberships-pro' ) . "</th>";
+		$table_content .= 			"<th>" . __("Download", 'paid-memberships-pro' ) . "</th>";
+		$table_content .= 		"</tr>";
+		$table_content .= 	"</thead>";
+		$table_content .= 	"<tbody>";
+		$table_content .= 		$content;
+		$table_content .= 	"</tbody>";
+		$table_content .= "</table>";
+
+		return $table_content;
+
+	} else {
+		$content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
+		$content .= "<div><em>" . __("No PDF invoices found...", 'pmpro-pdf-invoices' ) . "</em></div>";
+	}
+
+	return $content;
+	}
 }
 add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
 
@@ -805,7 +834,6 @@ function pmpropdf_migrate_custom_template(){
  */
 function pmpropdf_updated_order( $order ) {
 	// Let developers decide if generate the pdf
-
 	if ( apply_filters( 'pmpropdf_can_regenerate_pdf_on_added_order', true, $order ) ) {
 		$invoice_dir = pmpropdf_get_invoice_directory_or_url();
 		$invoice_name = pmpropdf_generate_invoice_name($order->code);
@@ -818,4 +846,3 @@ function pmpropdf_updated_order( $order ) {
 	}
 }
 add_action( 'pmpro_updated_order', 'pmpropdf_updated_order', 99, 1);
-
