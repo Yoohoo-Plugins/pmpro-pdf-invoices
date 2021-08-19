@@ -257,6 +257,9 @@ function pmpropdf_generate_pdf($order_data){
 	} catch (Exception $ex){
 		return false;
 	}
+	
+	do_action( 'pmpropdf_generated_pdf_invoice', $order_data->id, $path );
+
 	return $path;
 }
 
@@ -499,7 +502,7 @@ function pmpropdf_get_rewrite_token(){
 */
 function pmpropdf_download_list_shortcode_handler(){
 	$content = __( 'Please login to view this content', 'pmpro-pdf-invoices' );
-	if(function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
+	if ( function_exists('pmpro_hasMembershipLevel' ) && pmpro_hasMembershipLevel() ) {
 		global $wpdb, $current_user;
 		$content = "";
 
@@ -572,6 +575,7 @@ function pmpropdf_download_list_shortcode_handler(){
 	}
 
 	return $content;
+	}
 }
 add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
 
