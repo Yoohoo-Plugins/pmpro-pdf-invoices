@@ -157,7 +157,16 @@ add_filter( 'pmpro_email_attachments', 'pmpropdf_attach_pdf_email', 10, 2 );
 function pmpropdf_added_order( $order ) {
 	// Let developers decide if generate the pdf
 	if ( apply_filters( 'pmpropdf_can_generate_pdf_on_added_order', true, $order ) ) {
-		pmpropdf_generate_pdf($order);
+		$last_order = pmpropdf_get_order_by_code( $order->code );
+
+		// Bail if order is empty / doesn't exist.
+		// We do this early to avoid initializing the DomPDF library if it is unneeded
+		if ( empty( $last_order[0] ) ) {
+			return;
+		}
+
+		$order_data = $last_order[0];
+		pmpropdf_generate_pdf( $order_data );
 	}
 }
 add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
