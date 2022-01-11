@@ -1,0 +1,15 @@
+name: Generate Translations
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  generate-translations:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: WordPress POT/PO/MO Generator
+      uses: strangerstudios/action-wp-pot-po-mo-generator@main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
