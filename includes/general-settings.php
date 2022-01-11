@@ -18,14 +18,14 @@ function pmpro_pdf_invoice_settings_page() {
 			if(file_exists($template_dir)){
 
 				unlink($template_dir);
-				pmpro_pdf_admin_notice( 'Template file reset.', 'success is-dismissible' );
+				pmpro_pdf_admin_notice( __( 'Template file reset.', 'pmpro-pdf-invoices' ) , 'success is-dismissible' );
 			}
 		}
 	}
 
 	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'regen_rewrites'){
 		pmpropdf_remove_rewrite_for_regen();
-		pmpro_pdf_admin_notice( 'Regenerated rewrite file.', 'success is-dismissible' );
+		pmpro_pdf_admin_notice( __( 'Regenerated rewrite file.', 'pmpro-pdf-invoices' ), 'success is-dismissible' );
 	}
 
 	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'set_template'){
@@ -47,13 +47,13 @@ function pmpro_pdf_invoice_settings_page() {
 
 	            ?>
 	            <div class="notice notice-success">
-	                <p><?php _e('Template Saved!'); ?></p>
+	                <p><?php _e( 'Template Saved!', 'pmpro-pdf-invoices' ); ?></p>
 	            </div>
 	            <?php
 	        } catch(Exception $ex){
 	            ?>
 	            <div class="update-nag">
-	                <p><?php _e('Could not save Template'); ?></p>
+	                <p><?php _e( 'Could not save Template', 'pmpro-pdf-invoices' ); ?></p>
 	            </div>
 	            <?php
 	        }
@@ -76,14 +76,14 @@ function pmpro_pdf_invoice_settings_page() {
 	$expired = false;
 
 	if ( empty( 'license' ) ) {
-		pmpro_pdf_admin_notice( 'If you are running PMPro PDF Invoices on a live site, we recommend an annual support license. <a href="https://yoohooplugins.com/plugins/zapier-integration/" target="_blank" rel="noopener">More Info</a>', 'warning' );
+		pmpro_pdf_admin_notice( __( 'If you are running PMPro PDF Invoices on a live site, we recommend an annual support license. <a href="https://yoohooplugins.com/plugins/zapier-integration/" target="_blank" rel="noopener">More Info</a>', 'pmpro-pdf-invoices' ), 'warning' );
 	}
 	// get the date and show a notice.
 	if ( ! empty( $expires ) ) {
 		$expired = pmpro_pdf_license_expires( $expires );
 		if ( $expired ) {
-			pmpro_pdf_admin_notice( 'Your license key has expired. We recommend in renewing your annual support license to continue to get automatic updates and premium support. <a href="https://yoohooplugins.com/plugins/zapier-integration/" target="_blank" rel="noopener">More Info</a>', 'warning' );
-			$expires = "Your license key has expired.";
+			pmpro_pdf_admin_notice( __( 'Your license key has expired. We recommend in renewing your annual support license to continue to get automatic updates and premium support. <a href="https://yoohooplugins.com/plugins/zapier-integration/" target="_blank" rel="noopener">More Info</a>', 'pmpro-pdf-invoices' ), 'warning' );
+			$expires = __( 'Your license key has expired.', 'pmpro-pdf-invoices' );
 		} else {
 			$expired = false;
 		}
@@ -94,7 +94,7 @@ function pmpro_pdf_invoice_settings_page() {
 		if ( isset( $_REQUEST['pmpro_pdf_invoice_license_key' ] ) && !empty( $_REQUEST['pmpro_pdf_invoice_license_key'] ) ) {
 			update_option( 'pmpro_pdf_invoice_license_key', $_REQUEST['pmpro_pdf_invoice_license_key'] );
 			$license = $_REQUEST['pmpro_pdf_invoice_license_key'];
-			pmpro_pdf_admin_notice( 'Saved successfully.', 'success is-dismissible' );
+			pmpro_pdf_admin_notice( __( 'Saved successfully.', 'pmpro-pdf-invoices' ), 'success is-dismissible' );
 		}else{
 			delete_option( 'pmpro_pdf_invoice_license_key' );
 			$license = '';
@@ -120,7 +120,7 @@ function pmpro_pdf_invoice_settings_page() {
 
 		// make sure the response came back okay
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			$message =  ( is_wp_error( $response ) && ! empty( $response->get_error_message() ) ) ? $response->get_error_message() : __( 'An error occurred, please try again.' );
+			$message =  ( is_wp_error( $response ) && ! empty( $response->get_error_message() ) ) ? $response->get_error_message() : __( 'An error occurred, please try again.', 'pmpro-pdf-invoices' );
 			pmpro_pdf_admin_notice( $message, 'error is-dismissible' );
 		} else {
 			$license_data = json_decode( wp_remote_retrieve_body( $response ) );
@@ -134,9 +134,9 @@ function pmpro_pdf_invoice_settings_page() {
 
 
 		if( $license_data->success != false ) {
-			pmpro_pdf_admin_notice( 'License successfully activated.', 'success is-dismissible' );
+			pmpro_pdf_admin_notice( __( 'License successfully activated.', 'pmpro-pdf-invoices' ), 'success is-dismissible' );
 		} else {
-			pmpro_pdf_admin_notice( 'Unable to activate license, please ensure your license is valid.', 'error is-dismissible' );
+			pmpro_pdf_admin_notice( __( 'Unable to activate license, please ensure your license is valid.', 'pmpro-pdf-invoices' ), 'error is-dismissible' );
 		}
 	}
 	// Deactivate license.
@@ -144,6 +144,7 @@ function pmpro_pdf_invoice_settings_page() {
 		if( ! check_admin_referer( 'pmpro_pdf_license_nonce', 'pmpro_pdf_license_nonce' ) ) {
 			return; // get out if we didn't click the Activate button
 	 	}
+
 	$api_params = array(
 		'edd_action' => 'deactivate_license',
 		'license' => $license,
@@ -157,7 +158,7 @@ function pmpro_pdf_invoice_settings_page() {
 		delete_option( 'pmpro_pdf_invoice_license_status' );
 		delete_option( 'pmpro_pdf_invoice_license_expires' );
 		$status = false;
-		pmpro_pdf_admin_notice( 'Deactivated license successfully.', 'success is-dismissible' );
+		pmpro_pdf_admin_notice( __( 'Deactivated license successfully.', 'pmpro-pdf-invoices' ), 'success is-dismissible' );
 	}
 
 
@@ -184,7 +185,7 @@ if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'insert_account_shortco
 
   			wp_update_post($update_post);
 
-  			pmpro_pdf_admin_notice( 'Shortcode automatically added to Account Page', 'success is-dismissible' );
+  			pmpro_pdf_admin_notice( __( 'Shortcode automatically added to Account Page', 'pmpro-pdf-invoices' ), 'success is-dismissible' );
   		}
   	}
 }
@@ -206,11 +207,11 @@ if (false !== $status && $status == 'valid') {
 		<h2><?php _e('PMPro PDF Invoices Options'); ?></h2>
 
 		<div class='pmpropdf_option_tabs'>
-			<div class='pmpropdf_tab active' data-tab='1'>Tools</div>
-			<div class='pmpropdf_tab' data-tab='2'>Settings</div>
-			<div class='pmpropdf_tab' data-tab='4'>Shortcode</div>
-			<div class='pmpropdf_tab' data-tab='3'>Info</div>
-			<div class='pmpropdf_tab <?php echo $license_tab_badge; ?>' data-tab='0'>License</div>
+			<div class='pmpropdf_tab active' data-tab='1'><?php esc_html_e( 'Tools', 'pmpro-pdf-invoices' ); ?></div>
+			<div class='pmpropdf_tab' data-tab='2'><?php esc_html_e( 'Settings', 'pmpro-pdf-invoices' ); ?></div>
+			<div class='pmpropdf_tab' data-tab='4'><?php esc_html_e( 'Shortcode', 'pmpro-pdf-invoices' ); ?></div>
+			<div class='pmpropdf_tab' data-tab='3'><?php esc_html_e( 'Info', 'pmpro-pdf-invoices' ); ?></div>
+			<div class='pmpropdf_tab <?php echo $license_tab_badge; ?>' data-tab='0'><?php esc_html_e( 'License', 'pmpro-pdf-invoices' ); ?></div>
 		</div>
 
 		<div class='wp-editor-container pmpropdf_option_section' data-tab='0'>
@@ -230,27 +231,27 @@ if (false !== $status && $status == 'valid') {
 
 						<tr>
 							<th scope="row" valign="top">
-								<?php _e( 'License Status' ); ?>
+								<?php _e( 'License Status', 'pmpro-pdf-invoices' ); ?>
 							</th>
 							<td>
 								<?php
 								if ( false !== $status && $status == 'valid' ) {
 									if ( ! $expired ) {
 										?>
-											<span class='rewrite_badge active'><strong><?php _e( 'Active' ); ?></strong></span>
+											<span class='rewrite_badge active'><strong><?php _e( 'Active', 'pmpro-pdf-invoices' ); ?></strong></span>
 										<?php
 									} else {
 										?>
-											<span class='rewrite_badge inactive'><strong><?php _e( 'Expired' ); ?></strong></span>
+											<span class='rewrite_badge inactive'><strong><?php _e( 'Expired', 'pmpro-pdf-invoices' ); ?></strong></span>
 										<?php
 									}	
 
 									if ( ! $expired && ! empty ( $expires ) ) {
-										esc_html_e( sprintf( 'Expires on %s', $expires ) );
+										esc_html_e( sprintf( 'Expires on %s', $expires ), 'pmpro-pdf-invoices' );
 									}
 								} else {
 									?>
-										<span class='rewrite_badge unknown'><strong><?php _e( 'Unregistered' ); ?></strong></span>
+										<span class='rewrite_badge unknown'><strong><?php _e( 'Unregistered', 'pmpro-pdf-invoices' ); ?></strong></span>
 									<?php
 								}
 								?>
@@ -267,7 +268,7 @@ if (false !== $status && $status == 'valid') {
 										<input type="submit" class="button-secondary" style="color:red;" name="deactivate_license" value="<?php _e('Deactivate License'); ?>"/><br/><br/>
 										<?php } else {
 										wp_nonce_field( 'pmpro_pdf_license_nonce', 'pmpro_pdf_license_nonce' ); ?>
-										<input type="submit" class="button-secondary" name="activate_license" value="<?php _e('Activate License'); ?>" <?php if ( isset( $expired ) && $expired ) { echo 'disabled'; } ?>>
+										<input type="submit" class="button-secondary" name="activate_license" value="<?php _e( 'Activate License', 'pmpro-pdf-invoices' ); ?>" <?php if ( isset( $expired ) && $expired ) { echo 'disabled'; } ?>>
 									<?php } ?>
 								</td>
 							</tr>
@@ -281,44 +282,47 @@ if (false !== $status && $status == 'valid') {
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section visible' data-tab='1'>
-				<strong>Template Editor</strong>
+				<strong><?php esc_html_e( 'Template Editor', 'pmpro-pdf-invoices' ); ?></strong>
 				<br>
 
 				<?php
-				$template_notice = 'It appears you do not have a custom template set up.';
-				$template_button = 'Create Template';
+				$template_notice = __( 'It appears you do not have a custom template set up.', 'pmpro-pdf-invoices' );
+				$template_button = __( 'Create Template', 'pmpro-pdf-invoices' );
 
 				$upload_dir = wp_upload_dir();
 				if(!empty($upload_dir) && !empty($upload_dir['basedir'])){
 					$custom_dir = $upload_dir['basedir'] . '/pmpro-invoice-templates/order.html';
 					if(file_exists($custom_dir)){
-    					$template_notice = 'You are using a custom template.';
-    					$template_button = 'Edit Template';
+    					$template_notice = __( 'You are using a custom template.', 'pmpro-pdf-invoices' );
+    					$template_button = __( 'Edit Template', 'pmpro-pdf-invoices' );
     				}
     			}
     			?>
-				<small><?php echo $template_notice; ?></small>
+				<small><?php echo esc_html( $template_notice ); ?></small>
 
 				<br><br>
-				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=template_editor'><?php echo $template_button; ?></a>
+				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=template_editor'><?php echo esc_html( $template_button ); ?></a>
 
 				<?php if(file_exists($custom_dir)){ ?>
-					<a class='button reset_template_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=reset_template'>Reset Template</a>
+					<a class='button reset_template_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=reset_template'><?php esc_html_e( 'Reset Template', 'pmpro-pdf-invoices' ); ?></a>
 				<?php } ?>
 
-				<a class='button select_template_btn' href='#' title="Select a template from our library">Select Template</a> 
+				<a class='button select_template_btn' href='#' title="Select a template from our library"><?php esc_html_e( 'Select Template', 'pmpro-pdf-invoices' ); ?></a> 
+
+				<?php $pdf_sample_nonce = wp_create_nonce( 'pmpropdf_view_sample' ); ?>
+				<a class='button view_sample_btn' href="?page=pmpro_pdf_invoices_license_key&sub_action=view_sample&_wpnonce=<?php echo $pdf_sample_nonce; ?>" target="_blank"><?php esc_html_e( 'Download PDF Sample', 'pmpro-pdf-invoices' ); ?></a>
 
 				<br><br>
-				<small><em><strong>Tip:</strong> Not sure where to start? use one of our included templates by clicking on 'Select Template'</em></small>
+				<small><em><?php _e( "<strong>Tip:</strong> Not sure where to start? use one of our included templates by clicking on 'Select Template'", 'pmpro-pdf-invoices' ); ?></em></small>
 
 				<br><br>
-				<strong>Generate Missing Invoices</strong>
+				<strong><?php esc_html_e( 'Generate Missing Invoices', 'pmpro-pdf-invoices' ); ?></strong>
 				<div class='missing_invoice_log'>
-					<div class='item'>No output data yet...</div>
+					<div class='item'><?php esc_html_e( 'No output data yet...', 'pmpro-pdf-invoices' ); ?></div>
 				</div>
-				<small><em>Please leave this window open while processing</em></small>
+				<small><em><?php esc_html_e( 'Please leave this window open while processing', 'pmpro-pdf-invoices' ); ?></em></small>
 				<br><br>
-				<button class='button generate_missing_logs'>Generate</button>
+				<button class='button generate_missing_logs'><?php esc_html_e( 'Generate', 'pmpro-pdf-invoices' ); ?></button>
 				<?php
 
 				$user_id = get_current_user_id();
@@ -348,18 +352,18 @@ if (false !== $status && $status == 'valid') {
 					<?php } ?>
 
 				<br><br>
-				<strong>Archives</strong>
+				<strong><?php esc_html_e( 'Archives', 'pmpro-pdf-invoices' ); ?></strong>
 				
 				<br><br>
-				<a class='button download_zip_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=download_zip_archive'>ZIP & Download</a>
+				<a class='button download_zip_btn' href='?page=pmpro_pdf_invoices_license_key&sub_action=download_zip_archive'><?php esc_html_e( 'ZIP & Download', 'pmpro-pdf-invoices' ); ?></a>
 				
 				<br><br>
-				<small><em>Click the button above to download all stored invoices as a ZIP file. Alternatively individual files can be downloaded from the orders page</em></small>
+				<small><em><?php esc_html_e( 'Click the button above to download all stored invoices as a ZIP file. Alternatively individual files can be downloaded from the orders page', 'pmpro-pdf-invoices' ); ?></em></small>
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='2'>
 				<form method="POST" style='width: 45%; display: inline-block; vertical-align: top'>
-					<strong>Invoice Logo</strong>
+					<strong><?php esc_html_e( 'Invoice Logo', 'pmpro-pdf-invoices' ); ?></strong>
 					<br>
 					<div class='logo_holder'>
 						<?php if(!empty($logo_url)) {
@@ -368,14 +372,14 @@ if (false !== $status && $status == 'valid') {
 							<?php
 						} else {
 							?>
-								<em>No Logo Selected</em>
+								<em><?php esc_html_e( 'No Logo Selected', 'pmpro-pdf-invoices' ); ?></em>
 							<?php
 						} ?>
 					</div>
-					<button class='button pmpropdf_logo_upload'>Select Image</button>
+					<button class='button pmpropdf_logo_upload'><?php esc_html_e( 'Select Image', 'pmpro-pdf-invoices' ); ?></button>
 					<?php if(!empty($logo_url)){
 						?>
-							<button class='button pmpropdf_logo_remove'>Remove</button>
+							<button class='button pmpropdf_logo_remove'><?php esc_html_e( 'Remove', 'pmpro-pdf-invoices' ); ?></button>
 						<?php
 					} ?>
 
@@ -383,9 +387,9 @@ if (false !== $status && $status == 'valid') {
 
 					<input id='logo_url' name='logo_url' type='hidden' value='<?php echo $logo_url; ?>' />
 
-					<strong>Emails</strong>
+					<strong><?php esc_html_e( 'Emails', 'pmpro-pdf-invoices' ); ?></strong>
 					<br>
-					<label style="padding-top: 10px; display: block"><input type="checkbox" name="admin_emails" <?php echo !empty($admin_emails) ? 'checked' : ''; ?>> <small>Attach PDF's to admin checkout emails</small></label>
+					<label style="padding-top: 10px; display: block"><input type="checkbox" name="admin_emails" <?php echo !empty($admin_emails) ? 'checked' : ''; ?>> <small><?php esc_html_e( "Attach PDF's to admin checkout emails", 'pmpro-pdf-invoices' ); ?></small></label>
 
 					<br><br>
 					<input type='submit' class='button button-primary' name='pmpropdf_save_settings' value='Save Settings'>
@@ -393,7 +397,7 @@ if (false !== $status && $status == 'valid') {
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='3'>
-				<strong>ZipArchive Module</strong><br>
+				<strong><?php esc_html_e( 'ZipArchive Module', 'pmpro-pdf-invoices' ); ?></strong><br>
 				<?php
 				if(class_exists('ZipArchive')){
 					echo "<em class='rewrite_badge active'>Active</em> Invoices can be archived and downloaded as a ZIP file.";
@@ -402,34 +406,34 @@ if (false !== $status && $status == 'valid') {
 				}
 				?>
 				<br><br>
-				<strong>Invoice Rewrite Status</strong><br>
+				<strong><?php esc_html_e( 'Invoice Rewrite Status', 'pmpro-pdf-invoices' ); ?></strong><br>
 				<?php
 				if(pmpropdf_check_rewrite_active()){
-					echo "<em class='rewrite_badge active'>Active</em> Invoices cannot be accessed directly.";
+					echo "<em class='rewrite_badge active'>" . __( 'Active', 'pmpro-pdf-invoices' ) . "</em> " . __( 'Invoices cannot be accessed directly.', 'pmpro-pdf-invoices' );
 				} else {
-					echo "<em class='rewrite_badge inactive'>Inactive</em> Invoice are not secured and can be accessed directly.";
+					echo "<em class='rewrite_badge inactive'>" . __( 'Inactive', 'pmpro-pdf-invoices' ) . "</em> " . __( 'Invoice are not secured and can be accessed directly.', 'pmpro-pdf-invoices' );
 				}
 				?>
 				<br><br>
-				<strong>Regenerate Invoice Rewrites</strong><br>
-				<small>Use this tool to regenerate the rewrite file</small>
+				<strong><?php esc_html_e( 'Regenerate Invoice Rewrites', 'pmpro-pdf-invoices' ); ?></strong><br>
+				<small><?php esc_html_e( 'Use this tool to regenerate the rewrite file', 'pmpro-pdf-invoices' ); ?></small>
 				<br><br>
-				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=regen_rewrites'>Regenerate Rewrite File</a> <br>
+				<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=regen_rewrites'><?php esc_html_e( 'Regenerate Rewrite File', 'pmpro-pdf-invoices' ); ?></a> <br>
 				<br>
 			</div>
 
 			<div class='wp-editor-container pmpropdf_option_section' data-tab='4'>
-				<strong>PDF Invoice List</strong><br>
+				<strong><?php esc_html_e( 'PDF Invoice List', 'pmpro-pdf-invoices' ); ?></strong><br>
 				<br>
 				<code>[pmpropdf_download_all_zip]</code>
-				<em>This can be placed in a page to allow users to download all their invoices as a ZIP file</em>
+				<em><?php esc_html_e( 'This can be placed in a page to allow users to download all their invoices as a ZIP file', 'pmpro-pdf-invoices' ); ?></em>
 				<?php if(!class_exists('ZipArchive')) { ?>
 					<br><br>
-					<code style='color:red'>ZipArchive module not enabled within your server environment. This shortcode will be disabled</code>
+					<code style='color:red'><?php esc_html_e( 'ZipArchive module not enabled within your server environment. This shortcode will be disabled', 'pmpro-pdf-invoices' ); ?></code>
 				<?php } ?>
 				<br><br>
 				<code>[pmpropdf_download_list]</code>
-				<em>This can be placed in a page to allow users to download their PDF Invoices</em>
+				<em><?php esc_html_e( 'This can be placed in a page to allow users to download their PDF Invoices', 'pmpro-pdf-invoices' ); ?></em>
 
 				<?php
 				if(function_exists('pmpro_getOption')){
@@ -437,8 +441,8 @@ if (false !== $status && $status == 'valid') {
 					if($account_page_id !== NULL){
 						?>
 						<br><br>
-						<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=insert_account_shortcode'>Add to Account Page</a>
-						<br><br><em>Let us automatically add these shortcodes to your PMPro Account Page</em>
+						<a class='button' href='?page=pmpro_pdf_invoices_license_key&sub_action=insert_account_shortcode'><?php esc_html_e( 'Add to Account Page', 'pmpro-pdf-invoices' ); ?></a>
+						<br><br><em><?php esc_html_e( 'Let us automatically add these shortcodes to your PMPro Account Page', 'pmpro-pdf-invoices' ); ?></em>
 						<?php
 					}
 				}
@@ -449,28 +453,28 @@ if (false !== $status && $status == 'valid') {
 	<div class='pmprofpdf_template_selector' style='display: none;'>
 		<div class='inner_panel'>
 			<div class='heading'>
-				<h4>Select Template</h4>
-				<div class='close_btn'>Close</div>
+				<h4><?php esc_html_e( 'Select Template', 'pmpro-pdf-invoices' ); ?></h4>
+				<div class='close_btn'><?php esc_html_e( 'Close', 'pmpro-pdf-invoices' ); ?></div>
 			</div>
 			<div class='content'>
-				<small>Click on a tile below to apply template to your invoices</small>
+				<small><?php esc_html_e( 'Click on a tile below to apply template to your invoices', 'pmpro-pdf-invoices' ); ?></small>
 				<br><br>
 				<div class='template_tile' data-template='order'>
 					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/default_template.jpg'; ?>' />
 					<div class='hover'>
-						Default Template
+						<?php esc_html_e( 'Default Template', 'pmpro-pdf-invoices' ); ?>
 					</div>
 				</div>
 				<div class='template_tile' data-template='corporate'>
 					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/corp_template.jpg'; ?>' />
 					<div class='hover'>
-						Corporate Template
+						<?php esc_html_e( 'Corporate Template', 'pmpro-pdf-invoices' ); ?>
 					</div>
 				</div>
 				<br><br>
 			</div>
 			<div class='foot'>
-				<small><strong>Note: </strong>Selecting a bundled theme will override any custom templates you may have setup</small>
+				<small><?php _e( '<strong>Note: </strong>Selecting a bundled theme will override any custom templates you may have setup', 'pmpro-pdf-invoices' ); ?></small>
 			</div>
 		</div>
 	</div>
@@ -478,6 +482,11 @@ if (false !== $status && $status == 'valid') {
 <?php
 
 }
+
+/**
+ * Show an admin notice helper function.
+ * @since 1.8
+ */
 function pmpro_pdf_admin_notice( $message, $status ) {
 	   ?>
     <div class="notice notice-<?php echo $status; ?>">
@@ -485,6 +494,7 @@ function pmpro_pdf_admin_notice( $message, $status ) {
     </div>
     <?php
 }
+
 function pmpro_pdf_license_expires( $expiry_date ) {
 	$today = date( 'Y-m-d H:i:s' );
 
@@ -495,3 +505,21 @@ function pmpro_pdf_license_expires( $expiry_date ) {
 	}
 	return $r;
 }
+
+/**
+ * Call the generate sample PDF method to get a sample PDF.
+ * @since 1.10
+ */
+function pmpro_pdf_admin_view_sample_pdf() {
+	if ( ! empty( $_GET['page'] ) && ! empty( $_GET['sub_action'] ) ) {
+		if ( $_GET['page'] === 'pmpro_pdf_invoices_license_key' && $_GET['sub_action'] === 'view_sample' ){
+			$pmpropdf_view_sample_nonce = $_REQUEST['_wpnonce'];
+			if ( ! wp_verify_nonce( $pmpropdf_view_sample_nonce, 'pmpropdf_view_sample' ) ) {
+				die( 'Failed security check for sample PDF' );
+			} else {
+				pmpropdf_generate_sample_pdf();
+			}
+		}
+	}
+}
+add_action( 'admin_init', 'pmpro_pdf_admin_view_sample_pdf' );
