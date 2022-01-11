@@ -5,10 +5,10 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.9.1
+ * Version: 1.10
  * License: GPL2 or later
- * Tested up to: 5.4
- * Requires PHP: 5.6
+ * Tested up to: 5.8
+ * Requires PHP: 7.0
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: pmpro-pdf-invoices
  * Domain Path: languages
@@ -38,7 +38,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.9.1' );
+define( 'PMPRO_PDF_VERSION', '1.10' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -176,7 +176,7 @@ add_action( 'pmpro_added_order', 'pmpropdf_added_order' );
  * Modular design allows it to be used in the primary pmpro_email_attachments_hook
  * As well as the batch processing tool
 */
-function pmpropdf_generate_pdf($order_data){
+function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 
 	// Stop PDF from generating in certain cases.
 	if ( ! apply_filters( 'pmpropdf_should_generate_pdf', true, $order_data ) ) {
@@ -200,16 +200,23 @@ function pmpropdf_generate_pdf($order_data){
 		$billing_details = '';
 	}
 
-	try{
-		$date = isset( $order_data->timestamp) ? new DateTime( $order_data->timestamp ) : new DateTime();
+	/* Deprecated, DateTime is creating inconsistent formatting in some cases
+	 * Potentially to do with this not being a standard format
+	*/
+	/*try{
+		$date = isset( $order_data->timestamp) ? new DateTime($order_data->timestamp) : new DateTime();
 		$date = $date->format( "Y-m-d" );
 	} catch(Exception $e) {
 		$date = isset( $order_data->timestamp) ? date('Y-m-d', $order_data->timestamp) : date('Y-m-d');
 	} catch(Error $e){
 		$date = isset( $order_data->timestamp) ? date('Y-m-d', $order_data->timestamp) : date('Y-m-d');
-	}
+	}*/
 
-	$payment_method = !empty( $order_data->gateway ) ? apply_filters( 'pmpro_pdf_gateway_string', $order_data->gateway ) : __( 'N/A', 'pmpro-pdf-invoices');
+	$date = isset( $order_data->timestamp) ? date_i18n( get_option('date_format'), $order_data->timestamp) : date_i18n( get_option('date_format'));
+
+	$gateway = pmpro_gateways();
+
+	$payment_method = !empty( $order_data->gateway ) ? apply_filters( 'pmpro_pdf_gateway_string', $gateway[$order_data->gateway] ) : __( 'N/A', 'pmpro-pdf-invoices');
 
 	$order_level_name = '';
 	if(function_exists('pmpro_getLevel')){
@@ -252,6 +259,12 @@ function pmpropdf_generate_pdf($order_data){
 
 	$dompdf->loadHtml( $body );
 	$dompdf->render();
+
+	// This allows calling functions to get access to the dompdf instance, instead of storing
+	if($return_dom_pdf){
+		return $dompdf;
+	}
+
 	$output = $dompdf->output();
 	// Let's write this file to a directory now.
 
@@ -268,6 +281,39 @@ function pmpropdf_generate_pdf($order_data){
 
 	return $path;
 }
+
+/**
+ * Generate and download a sample PDF without needing to checkout.
+ * Uses sample data.
+ * @since 1.10
+ */
+function pmpropdf_generate_sample_pdf(){
+	if ( class_exists( 'MemberOrder' ) ) {
+		/* Create a dummy order */
+		$order = new MemberOrder();
+		$order->get_test_order();
+
+		/* Fill the missing details in the order, that are needed for PDF */
+		$order->code = $order->getRandomCode();
+		$order->total = $order->InitialPayment;
+		$order->subtotal = $order->total;
+		$order->tax = 0;
+
+		/* Cross populate the billing object */
+		if ( ! empty( $order->billing ) && is_object( $order->billing ) ) {
+			foreach( $order->billing as $key => $value ) {
+				$dynamiKey = "billing_{$key}";
+				$order->{$dynamiKey} = $value;
+			}
+		}
+		$dompdf = pmpropdf_generate_pdf( $order, true );
+
+		$dompdf->stream( 'invoice_sample.pdf' );
+		exit();
+	}
+}
+
+
 
 // look at changing this soon.
 function pmpropdf_admin_column_header( $order_id ) {

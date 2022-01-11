@@ -4,8 +4,8 @@ Tags: pdf, pdf invoice, invoices
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4GC4JEZH7KSKL
 Requires at least: 4.9
 Tested up to: 5.8
-Requires PHP: 5.6
-Stable tag: 1.9.1
+Requires PHP: 7.0
+Stable tag: 1.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,10 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+= 1.10 - 2022-01-11 =
+* ENHANCEMENT: Added feature to download a preview of the PDF invoice template created. This uses a dummy order that Paid Memberships Pro provides.
+* ENHANCEMENT: Improved localization for strings that were excluded.
+* ENHANCEMENT: Improved handling of the payment_method label. Automatically detect the frontend label used.
 
 = 1.9.1 - 19-08-2021 =
 * Enhancement: Filter added 'pmpro_should_generate_pdf'. Allows developers to stop generating PDFs for certain cases.
