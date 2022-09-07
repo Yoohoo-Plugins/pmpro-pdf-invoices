@@ -1,0 +1,217 @@
+StartFontMetrics 4.1
+Notice Converted by PHP-font-lib
+Comment https://github.com/PhenX/php-font-lib
+EncodingScheme FontSpecific
+Copyright Created by www-data with FontForge 2.0 (http://fontforge.sf.net)
+FontName Firefly
+FontSubfamily Medium
+UniqueID FontForge 2.0 : Firefly Medium : 3-8-2014
+FullName Firefly Medium
+Version Version 2 
+PostScriptName Firefly
+Weight Bold
+ItalicAngle 0
+IsFixedPitch false
+UnderlineThickness 50
+UnderlinePosition -125
+FontHeightOffset 90
+Ascender 666
+Descender -46
+FontBBox 29 -44 484 666
+StartCharMetrics 112
+U 32 ; WX 145 ; N space ; G 3
+U 33 ; WX 92 ; N exclam ; G 4
+U 34 ; WX 147 ; N quotedbl ; G 5
+U 35 ; WX 222 ; N numbersign ; G 6
+U 36 ; WX 187 ; N dollar ; G 7
+U 37 ; WX 217 ; N percent ; G 8
+U 38 ; WX 170 ; N ampersand ; G 9
+U 39 ; WX 75 ; N quotesingle ; G 10
+U 40 ; WX 156 ; N parenleft ; G 11
+U 41 ; WX 141 ; N parenright ; G 12
+U 42 ; WX 180 ; N asterisk ; G 13
+U 43 ; WX 212 ; N plus ; G 14
+U 44 ; WX 101 ; N comma ; G 15
+U 45 ; WX 219 ; N hyphen ; G 16
+U 46 ; WX 108 ; N period ; G 17
+U 47 ; WX 216 ; N slash ; G 18
+U 48 ; WX 162 ; N zero ; G 19
+U 49 ; WX 180 ; N one ; G 20
+U 50 ; WX 144 ; N two ; G 21
+U 51 ; WX 134 ; N three ; G 22
+U 52 ; WX 205 ; N four ; G 23
+U 53 ; WX 143 ; N five ; G 24
+U 54 ; WX 149 ; N six ; G 25
+U 55 ; WX 172 ; N seven ; G 26
+U 56 ; WX 137 ; N eight ; G 27
+U 57 ; WX 149 ; N nine ; G 28
+U 58 ; WX 88 ; N colon ; G 29
+U 59 ; WX 102 ; N semicolon ; G 30
+U 60 ; WX 223 ; N less ; G 31
+U 61 ; WX 293 ; N equal ; G 32
+U 62 ; WX 210 ; N greater ; G 33
+U 63 ; WX 163 ; N question ; G 34
+U 64 ; WX 270 ; N at ; G 35
+U 65 ; WX 169 ; N A ; G 36
+U 66 ; WX 150 ; N B ; G 37
+U 67 ; WX 137 ; N C ; G 38
+U 68 ; WX 128 ; N D ; G 39
+U 69 ; WX 148 ; N E ; G 40
+U 70 ; WX 146 ; N F ; G 41
+U 71 ; WX 145 ; N G ; G 42
+U 72 ; WX 146 ; N H ; G 43
+U 73 ; WX 135 ; N I ; G 44
+U 74 ; WX 191 ; N J ; G 45
+U 75 ; WX 165 ; N K ; G 46
+U 76 ; WX 143 ; N L ; G 47
+U 77 ; WX 188 ; N M ; G 48
+U 78 ; WX 150 ; N N ; G 49
+U 79 ; WX 133 ; N O ; G 50
+U 80 ; WX 125 ; N P ; G 51
+U 81 ; WX 199 ; N Q ; G 52
+U 82 ; WX 169 ; N R ; G 53
+U 83 ; WX 135 ; N S ; G 54
+U 84 ; WX 186 ; N T ; G 55
+U 85 ; WX 176 ; N U ; G 56
+U 86 ; WX 166 ; N V ; G 57
+U 87 ; WX 254 ; N W ; G 58
+U 88 ; WX 199 ; N X ; G 59
+U 89 ; WX 186 ; N Y ; G 60
+U 90 ; WX 202 ; N Z ; G 61
+U 94 ; WX 165 ; N asciicircum ; G 62
+U 95 ; WX 382 ; N underscore ; G 63
+U 96 ; WX 164 ; N grave ; G 64
+U 97 ; WX 170 ; N a ; G 65
+U 98 ; WX 163 ; N b ; G 66
+U 99 ; WX 129 ; N c ; G 67
+U 100 ; WX 127 ; N d ; G 68
+U 101 ; WX 142 ; N e ; G 69
+U 102 ; WX 130 ; N f ; G 70
+U 103 ; WX 146 ; N g ; G 71
+U 104 ; WX 143 ; N h ; G 72
+U 105 ; WX 138 ; N i ; G 73
+U 106 ; WX 176 ; N j ; G 74
+U 107 ; WX 147 ; N k ; G 75
+U 108 ; WX 134 ; N l ; G 76
+U 109 ; WX 209 ; N m ; G 77
+U 110 ; WX 204 ; N n ; G 78
+U 111 ; WX 132 ; N o ; G 79
+U 112 ; WX 120 ; N p ; G 80
+U 113 ; WX 188 ; N q ; G 81
+U 114 ; WX 169 ; N r ; G 82
+U 115 ; WX 139 ; N s ; G 83
+U 116 ; WX 159 ; N t ; G 84
+U 117 ; WX 165 ; N u ; G 85
+U 118 ; WX 164 ; N v ; G 86
+U 119 ; WX 216 ; N w ; G 87
+U 120 ; WX 197 ; N x ; G 88
+U 121 ; WX 180 ; N y ; G 89
+U 122 ; WX 184 ; N z ; G 90
+U 123 ; WX 200 ; N braceleft ; G 91
+U 125 ; WX 187 ; N braceright ; G 92
+U 126 ; WX 245 ; N asciitilde ; G 93
+U 147 ; WX 131 ; N uni0093 ; G 94
+U 148 ; WX 132 ; N uni0094 ; G 95
+U 162 ; WX 178 ; N cent ; G 96
+U 163 ; WX 156 ; N sterling ; G 97
+U 169 ; WX 252 ; N copyright ; G 98
+U 176 ; WX 126 ; N degree ; G 99
+U 196 ; WX 206 ; N Adieresis ; G 100
+U 214 ; WX 192 ; N Odieresis ; G 101
+U 220 ; WX 181 ; N Udieresis ; G 102
+U 223 ; WX 133 ; N germandbls ; G 103
+U 228 ; WX 182 ; N adieresis ; G 104
+U 246 ; WX 159 ; N odieresis ; G 105
+U 252 ; WX 200 ; N udieresis ; G 106
+U 8211 ; WX 217 ; N endash ; G 107
+U 8212 ; WX 514 ; N emdash ; G 108
+U 8216 ; WX 116 ; N quoteleft ; G 109
+U 8217 ; WX 116 ; N quoteright ; G 110
+U 8364 ; WX 207 ; N Euro ; G 111
+EndCharMetrics
+StartKernData 
+StartKernPairs 72
+
+KPX dollar colon 119
+KPX dollar A 138
+KPX dollar E 140
+KPX dollar I 103
+KPX dollar O 136
+KPX dollar P 142
+KPX dollar S 138
+KPX dollar U 136
+
+KPX parenright colon 113
+KPX parenright A 78
+KPX parenright E 120
+KPX parenright I 110
+KPX parenright O 114
+KPX parenright P 107
+KPX parenright S 97
+KPX parenright U 91
+
+KPX slash colon 90
+KPX slash A 110
+KPX slash E 108
+KPX slash I 75
+KPX slash O 104
+KPX slash P 107
+KPX slash S 113
+KPX slash U 101
+
+KPX three colon 139
+KPX three A 114
+KPX three E 149
+KPX three I 108
+KPX three O 148
+KPX three P 140
+KPX three S 143
+KPX three U 146
+
+KPX seven colon 116
+KPX seven A 88
+KPX seven E 119
+KPX seven I 107
+KPX seven O 111
+KPX seven P 106
+KPX seven S 95
+KPX seven U 93
+
+KPX nine colon 140
+KPX nine A 121
+KPX nine E 147
+KPX nine I 115
+KPX nine O 147
+KPX nine P 140
+KPX nine S 140
+KPX nine U 143
+
+KPX colon colon 138
+KPX colon A 120
+KPX colon E 147
+KPX colon I 116
+KPX colon O 146
+KPX colon P 140
+KPX colon S 139
+KPX colon U 141
+
+KPX less colon 143
+KPX less A 110
+KPX less E 144
+KPX less I 121
+KPX less O 141
+KPX less P 130
+KPX less S 130
+KPX less U 134
+
+KPX W colon 140
+KPX W A 119
+KPX W E 147
+KPX W I 115
+KPX W O 146
+KPX W P 138
+KPX W S 138
+KPX W U 142
+EndKernPairs
+EndKernData
+EndFontMetrics
