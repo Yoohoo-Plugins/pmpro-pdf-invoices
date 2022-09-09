@@ -257,6 +257,24 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 		$body
 	);
 
+	if( preg_match_all( '/(?<={{)(.*?)(?=}})/m', $body, $matches ) ) {
+
+		foreach( $matches as $match_group ) {
+
+			foreach( $match_group as $mg ) {
+
+				$cleaned_up = strip_tags( $mg );
+
+				$meta = get_user_meta( $order_data->user_id, $cleaned_up, true );
+
+				$body = str_replace( '{{'.$cleaned_up.'}}', $meta, $body );
+				
+			}
+			
+		}
+
+	}
+
 	$dompdf->loadHtml( $body );
 	$dompdf->render();
 
