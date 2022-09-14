@@ -186,7 +186,6 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 	$user = get_user_by('ID', $order_data->user_id);
 
 	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
-
 	$body = pmpropdf_get_order_template_html();
 
 	// Build the string for billing data.
@@ -342,7 +341,7 @@ add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
 function pmpropdf_admin_column_body( $order ) {
 
 	if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($order->code) ) ){
-	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
+	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '" target="_blank">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
 	} else {
 		echo '<td> - </td>';
 	}
