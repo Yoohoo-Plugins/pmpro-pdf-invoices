@@ -3,9 +3,9 @@ Contributors: andrewza, yoohooplugins
 Tags: pdf, pdf invoice, invoices
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4GC4JEZH7KSKL
 Requires at least: 4.9
-Tested up to: 5.8
+Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: 1.10
+Stable tag: 1.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,12 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+= 1.11 - 2022-09-14 =
+* ENHANCEMENT: Support UTF8 languages. Please use the specific fonts DejaVu Sans - works well for Cyrillic characters and DroidSansFallbackFull - works well for Chinese characters.
+* ENHANCEMENT: New filter added `pmpro_pdf_dompdf_default_font` to allow you to override the default font used in PDF's.
+* ENHANCEMENT: Added dynamic logic to try and get user_meta from any non-predefined variables. For example, if you have a custom field of "company" you may now pass {{company}} into the PDF to automatically generate the data from this variable.
+* BUG FIX: Fixed an issue where {{order_date}} would be set to the current date when regenerating PDF's.
+
 = 1.10 - 2022-01-11 =
 * ENHANCEMENT: Added feature to download a preview of the PDF invoice template created. This uses a dummy order that Paid Memberships Pro provides.
 * ENHANCEMENT: Improved localization for strings that were excluded.
