@@ -2,16 +2,16 @@
 # This file is distributed under the GPL2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - PDF Invoices 1.10\n"
+"Project-Id-Version: Paid Memberships Pro - PDF Invoices 1.11\n"
 "Report-Msgid-Bugs-To: support@yoohooplugins.com\n"
 "Last-Translator: Yoohoo Plugins <support@yoohooplugins.com>\n"
 "Language-Team: Yoohoo Plugins <support@yoohooplugins.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-01-11T18:27:26+00:00\n"
+"POT-Creation-Date: 2022-09-14T17:17:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.5.0\n"
+"X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: pmpro-pdf-invoices\n"
 
 #. Plugin Name of the plugin
@@ -193,7 +193,7 @@ msgid "Nginx Detected"
 msgstr ""
 
 #: includes/general-settings.php:343
-#: pmpro-pdf-invoices.php:782
+#: pmpro-pdf-invoices.php:799
 msgid "We detected that your installation is running on Nginx. To protect generated invoices that are stored on your web server, the following Nginx rule should be added to your Nginx WordPress installation config file."
 msgstr ""
 
@@ -309,44 +309,44 @@ msgstr ""
 msgid "<strong>Note: </strong>Selecting a bundled theme will override any custom templates you may have setup"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:194
+#: pmpro-pdf-invoices.php:193
 msgid "Billing Details"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:219
+#: pmpro-pdf-invoices.php:218
 msgid "N/A"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:320
+#: pmpro-pdf-invoices.php:337
 msgid "Invoice PDF"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:327
+#: pmpro-pdf-invoices.php:344
 msgid "Download PDF"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:556
-#: pmpro-pdf-invoices.php:568
+#: pmpro-pdf-invoices.php:573
+#: pmpro-pdf-invoices.php:585
 msgid "Please login to view this content"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:607
-#: pmpro-pdf-invoices.php:625
+#: pmpro-pdf-invoices.php:624
+#: pmpro-pdf-invoices.php:642
 msgid "PDF Invoices"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:626
+#: pmpro-pdf-invoices.php:643
 msgid "No PDF invoices found..."
 msgstr ""
 
-#: pmpro-pdf-invoices.php:639
+#: pmpro-pdf-invoices.php:656
 msgid "Download all PDF's as ZIP"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:781
+#: pmpro-pdf-invoices.php:798
 msgid "Paid Memberships Pro - PDF Invoices - Nginx Detected"
 msgstr ""
 
-#: pmpro-pdf-invoices.php:790
+#: pmpro-pdf-invoices.php:807
 msgid "I've Added The Nginx Rule"
 msgstr ""
