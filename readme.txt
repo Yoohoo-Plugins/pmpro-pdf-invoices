@@ -26,8 +26,6 @@ Yes the PDF templates are customizable and use general HTML code with custom tag
 
 == Changelog ==
 = 1.11 - 2022-09-14 =
-* ENHANCEMENT: Support UTF8 languages. Please use the specific fonts DejaVu Sans - works well for Cyrillic characters and DroidSansFallbackFull - works well for Chinese characters.
-* ENHANCEMENT: New filter added `pmpro_pdf_dompdf_default_font` to allow you to override the default font used in PDF's.
 * ENHANCEMENT: Added dynamic logic to try and get user_meta from any non-predefined variables. For example, if you have a custom field of "company" you may now pass {{company}} into the PDF to automatically generate the data from this variable.
 * BUG FIX: Fixed an issue where {{order_date}} would be set to the current date when regenerating PDF's.
 

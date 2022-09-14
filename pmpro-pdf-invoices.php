@@ -185,21 +185,9 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 
 	$user = get_user_by('ID', $order_data->user_id);
 
-	$options = new Options();
-
-	/**
-	 * DejaVu Sans: works well for cyrillic characters
-	 * DroidSansFallbackFull: works well for chinese characters
-	 * 
-	 */
-	
-	if( has_filter( 'pmpro_pdf_dompdf_default_font' ) ) {
-		$options->setDefaultFont( apply_filters( 'pmpro_pdf_dompdf_default_font', 'DejaVu Sans' ) );
-	}
-	
 	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
-	
-	$dompdf->setOptions($options);
+
+	$body = pmpropdf_get_order_template_html();
 
 	// Build the string for billing data.
 	if ( ! empty( $order_data->billing_name ) ) {
