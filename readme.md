@@ -21,7 +21,7 @@ A license key is required for support and automatic updates for Paid Memberships
 If you find an issue/bug, let us know by [creating a detailed GitHub issue](https://github.com/yoohoo-plugins/pmpro-pdf-invoices/issues/new).
 
 ## Support ##
-This is a developer's portal for Paid Memberships Pro - PDF Invoices. We do not offer support on this channel. **Any support related questions should be directed to [yoohooplugins.com/plugins/paid-memberships-pro-pdf-invoices/](https://yoohooplugins.com/plugins/paid-memberships-pro-pdf-invoices/).**
+This is a developer's portal for Paid Memberships Pro - PDF Invoices. We do not offer support on this channel. **Any support related questions should be directed to [yoohooplugins.com/support](https://yoohooplugins.com/support/). Please note that an active license key is required to receive support for this product.**
 
 ## Contributing to Paid Memberships Pro - PDF Invoices ##
 We encourage and welcome any contribution to Paid Memberships Pro - PDF Invoices. Please read the [guidelines for contributing](https://github.com/yoohoo-plugins/pmpro-pdf-invoices/blob/dev/.github/CONTRIBUTING.md) to this repository.
