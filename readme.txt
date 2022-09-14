@@ -27,7 +27,7 @@ Yes the PDF templates are customizable and use general HTML code with custom tag
 == Changelog ==
 = 1.11 - 2022-09-14 =
 * ENHANCEMENT: Added dynamic logic to try and get user_meta from any non-predefined variables. For example, if you have a custom field of "company" you may now pass {{company}} into the PDF to automatically generate the data from this variable.
-* BUG FIX: Fixed an issue where {{order_date}} would be set to the current date when regenerating PDF's.
+* BUG FIX: Fixed an issue where {{invoice_date}} would be set to the current date when regenerating PDF's.
 
 = 1.10 - 2022-01-11 =
 * ENHANCEMENT: Added feature to download a preview of the PDF invoice template created. This uses a dummy order that Paid Memberships Pro provides.
