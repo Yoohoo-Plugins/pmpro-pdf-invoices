@@ -199,19 +199,7 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 		$billing_details = '';
 	}
 
-	/* Deprecated, DateTime is creating inconsistent formatting in some cases
-	 * Potentially to do with this not being a standard format
-	*/
-	/*try{
-		$date = isset( $order_data->timestamp) ? new DateTime($order_data->timestamp) : new DateTime();
-		$date = $date->format( "Y-m-d" );
-	} catch(Exception $e) {
-		$date = isset( $order_data->timestamp) ? date('Y-m-d', $order_data->timestamp) : date('Y-m-d');
-	} catch(Error $e){
-		$date = isset( $order_data->timestamp) ? date('Y-m-d', $order_data->timestamp) : date('Y-m-d');
-	}*/
-
-	$date = date_i18n( get_option('date_format'), $order_data->timestamp );
+	$date = date_i18n( get_option( 'date_format' ), strtotime( $order_data->timestamp ) );
 	
 	$gateway = pmpro_gateways();
 
