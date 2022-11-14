@@ -319,19 +319,36 @@ function pmpropdf_generate_sample_pdf(){
 }
 
 
-
-// look at changing this soon.
+/**
+ * Generate the invoice name based on the invoice code.
+ * @since 1.10
+ */
 function pmpropdf_admin_column_header( $order_id ) {
-	echo '<th>' . __( 'Invoice PDF', 'pmpro-pdf-invoices' ) . '</th>';
+	// Only load this for orders.
+	if ( ! current_user_can( 'pmpro_orders' ) ) {
+		return;
+	}
+
+	echo '<th>' . esc_html__( 'Invoice PDF', 'pmpro-pdf-invoices' ) . '</th>';
 }
 add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
 
+/**
+ * Add column body to the orders page for PDF Invoices.
+ *
+ * @param MemberObject $order The Member Order.
+ */
 function pmpropdf_admin_column_body( $order ) {
+
+	// Only load this for orders.
+	if ( ! current_user_can( 'pmpro_orders' ) ) {
+		return;
+	}
 
 	if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($order->code) ) ){
 	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '" target="_blank">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
 	} else {
-		echo '<td> - </td>';
+		echo '<td><a href="javascript:void(0)" class="pmpro-pdf-generate" order_code="' . $order->code . '">Generate PDF</a></td>';
 	}
 
 }
@@ -897,3 +914,32 @@ function pmpropdf_updated_order( $order ) {
 	}
 }
 add_action( 'pmpro_updated_order', 'pmpropdf_updated_order', 99, 1);
+
+/**
+ * Function to enqueue scripts and styles on PMPro pages.
+ * @since 1.2
+ */
+function pmpropdf_enqueue_scripts_styles() {
+	// Only enqueue on PMPro prefixed admin pages.
+	if ( ! isset( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) !== 0 ) {
+		return;
+	}
+
+	// Enqueue scripts.
+	wp_register_script( 'pmpro-pdf-admin', plugins_url( '/includes/js/admin.js', __FILE__ ), array( 'jquery' ), PMPRO_PDF_VERSION );
+
+	wp_localize_script( 'pmpro-pdf-admin', 'pmpro_pdf_admin', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) )  );
+
+	wp_enqueue_script( 'pmpro-pdf-admin' );
+}
+add_action( 'admin_enqueue_scripts', 'pmpropdf_enqueue_scripts_styles' );
+
+/**
+ * Ajax generate single PDF Invoice single
+ * @since 1.2
+ */
+function pmpropdf_ajax_generate_pdf_invoice() {
+	update_option( 'some_option', 'some_value' );
+	die();
+}
+add_action( 'wp_ajax_pmpropdf_ajax_generate_pdf_invoicee', 'pmpropdf_ajax_generate_pdf_invoice' );
