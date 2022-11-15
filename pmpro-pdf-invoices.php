@@ -783,6 +783,10 @@ add_filter('admin_footer_text', 'pmpropdf_footer_note', 10, 1);
 
 function pmpropdf_nginx_notice () {
 
+	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+		return;
+	}
+
 	$user_id = get_current_user_id();
 
 	if( current_user_can( 'manage_options' ) && 
