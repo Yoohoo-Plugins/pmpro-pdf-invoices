@@ -218,19 +218,21 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 
 	// Items to replace.
 	$replacements = array(
-		"{{invoice_code}}" => $order_data->code,
-		"{{user_email}}" => $user->data->user_email,
+		'{{invoice_code}}' => $order_data->code,
+		'{{user_email}}' => $user->data->user_email,
 		'{{membership_level}}' => $order_level_name,
+		'{{membership_description}}' => $order_level->description,
+		'{{membership_level_confirmation_message}}' => $order_level->confirmation,
 		'{{billing_address}}' => $billing_details,
-		"{{payment_method}}" => $payment_method,
-		"{{total}}" => pmpro_formatPrice($order_data->total),
-		"{{site}}" => get_bloginfo( 'sitename' ),
-		"{{site_url}}" => esc_url( get_site_url() ),
-		"{{subtotal}}" => pmpro_formatPrice( $order_data->subtotal ),
-		"{{tax}}" => pmpro_formatPrice($order_data->tax),
-		"{{ID}}" => $order_data->membership_id,
-		"{{invoice_date}}" => $date,
-		"{{logo_image}}" => $logo_image
+		'{{payment_method}}' => $payment_method,
+		'{{total}}' => pmpro_formatPrice($order_data->total),
+		'{{site}}' => get_bloginfo( 'sitename' ),
+		'{{site_url}}' => esc_url( get_site_url() ),
+		'{{subtotal}}' => pmpro_formatPrice( $order_data->subtotal ),
+		'{{tax}}' => pmpro_formatPrice($order_data->tax),
+		'{{ID}}' => $order_data->membership_id,
+		'{{invoice_date}}' => $date,
+		'{{logo_image}}' => $logo_image
 	);
 
 	//Additional replacements - Developer hook to add custom variable parse
