@@ -350,7 +350,7 @@ function pmpropdf_admin_column_body( $order ) {
 	if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($order->code) ) ){
 	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '" target="_blank">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
 	} else {
-		echo '<td><a href="javascript:void(0)" class="pmpro-pdf-generate" order_code="' . $order->code . '">Generate PDF</a></td>';
+		echo '<td><a href="javascript:void(0)" id="pmpro-pdf-generate_' . esc_attr( $order->code ) . '" class="pmpro-pdf-generate" order_code="' . esc_attr( $order->code ) . '">Generate PDF</a></td>';
 	}
 
 }
@@ -934,7 +934,13 @@ function pmpropdf_enqueue_scripts_styles() {
 	// Enqueue scripts.
 	wp_register_script( 'pmpro-pdf-admin', plugins_url( '/includes/js/admin.js', __FILE__ ), array( 'jquery' ), PMPRO_PDF_VERSION );
 
-	wp_localize_script( 'pmpro-pdf-admin', 'pmpro_pdf_admin', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) )  );
+	wp_localize_script( 'pmpro-pdf-admin', 'pmpro_pdf_admin', array( 
+		'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		'admin_url' => esc_url( admin_url( '?pmpropdf=') ),
+		'download_text' => __( 'Download PDF', 'pmpro-pdf-invoices' ),
+		'nonce' => wp_create_nonce( 'pmpro-pdf-invoices-single' ),
+		)  
+	);
 
 	wp_enqueue_script( 'pmpro-pdf-admin' );
 }
@@ -945,7 +951,22 @@ add_action( 'admin_enqueue_scripts', 'pmpropdf_enqueue_scripts_styles' );
  * @since 1.2
  */
 function pmpropdf_ajax_generate_pdf_invoice() {
-	update_option( 'some_option', 'some_value' );
+	$order_code = sanitize_text_field( $_REQUEST['order_code'] );
+	$last_order = pmpropdf_get_order_by_code($order_code);
+
+	// check if nonce is valid
+	if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'pmpro-pdf-invoices-single' ) ) {
+		wp_die( __( 'Nonce is invalid', 'pmpro-pdf-invoices' ) );
+	}
+
+	// Bail if order is empty / doesn't exist.
+	// We do this early to avoid initializing the DomPDF library if it is unneeded
+	if ( empty( $last_order[0] ) ) {
+	 	return $attachments;
+	}
+
+	$order_data = $last_order[0];
+	pmpropdf_generate_pdf($order_data);
 	die();
 }
-add_action( 'wp_ajax_pmpropdf_ajax_generate_pdf_invoicee', 'pmpropdf_ajax_generate_pdf_invoice' );
+add_action( 'wp_ajax_pmpropdf_ajax_generate_pdf_invoice', 'pmpropdf_ajax_generate_pdf_invoice' );
