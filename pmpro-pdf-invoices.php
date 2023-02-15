@@ -575,26 +575,14 @@ function pmpropdf_get_rewrite_token(){
 
 /**
  * Shortcode handler for the invoice list based on current user
-*/
+ */
 function pmpropdf_download_list_shortcode_handler(){
-	$content = __( 'Please login to view this content', 'pmpro-pdf-invoices' );
-	if ( function_exists('pmpro_hasMembershipLevel' ) && pmpro_hasMembershipLevel() ) {
-		global $wpdb, $current_user;
-		$content = "";
-
-	// return if a pmpro core function is missing
-	if( ! function_exists('pmpro_hasMembershipLevel') ){
-		return $content;
-	}
-
-	// return if invoice table list is only for users with an active membership
-	if( apply_filters( 'pmpropdf_invoice_table_requires_active_membership', true ) && ! pmpro_hasMembershipLevel() ) {
-		$content = __( 'Please login to view this content', 'pmpro-pdf-invoices' );
-
-		return $content;
-	}
-
 	global $wpdb, $current_user;
+
+	// This is if it's shown on a page that doesn't require login.
+	if ( empty( $current_user ) && apply_filters( 'pmpropdf_show_logged_out_shortcode_message', false ) ) {
+		return esc_html__( 'Please login to view your invoices.', 'pmpro-pdf-invoices' );
+	}
 
 	$limit = apply_filters( 'pmpropdf_invoice_table_limit', 15 );
 
@@ -652,39 +640,8 @@ function pmpropdf_download_list_shortcode_handler(){
 
 	return $content;
 	}
-}
 add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
 
-
-/**
- * Shortcode handler for the download all as ZIP file
-*/
-function pmpropdf_download_all_zip_shortcode_handler($atts){
-	$title = __("Download all PDF's as ZIP", 'pmpro-pdf-invoices');
-	if(!empty($atts['title'])){
-		$title = sanitize_text_field($atts['title']);
-	}
-
-	if(class_exists('ZipArchive') && function_exists('pmpro_hasMembershipLevel') && pmpro_hasMembershipLevel()){
-		global $wpdb, $current_user;
-
-		$invoices = $wpdb->get_results("
-			SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
-			FROM $wpdb->pmpro_membership_orders
-			WHERE user_id = '$current_user->ID'
-			AND status NOT
-			IN('review', 'token', 'error')
-			ORDER BY timestamp DESC"
-		);
-
-		if(!empty($invoices) && count($invoices) > 0){
-			return "<a href='?pmpro_pdf_invoices_action=download_zip' target='_BLANK'>$title</a>";
-		}
-	}
-	return '';
-
-}
-add_shortcode('pmpropdf_download_all_zip', 'pmpropdf_download_all_zip_shortcode_handler');
 
 /**
  * Checks if we received a request to perform a zip of the current users documents
