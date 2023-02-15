@@ -25,6 +25,14 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+= 1.2 - TBD =
+* ENHANCEMENT: Added new templates: green, blank and split.
+* ENHANCEMENT: Adjusted logic for [pmpropdf_download_list], this now allows logged-in non-members to access past PDF invoices.
+* ENHANCEMENT: Added logic to generate single PDF Invoices from the Paid Memberships Pro Orders admin table.
+* ENHANCEMENT: Added more PDF variables: {{admin_email}}, {{membership_description}} and {{membership_level_confirmation_message}}.
+* ENHANCEMENT: Only show the NGINX nudge message on PMPro dashboard pages.
+* BUG FIX: Fixed an issue when regenerating PDF invoices would give you the current date and not the date of the order.
+
 = 1.11 - 2022-09-14 =
 * ENHANCEMENT: Added dynamic logic to try and get user_meta from any non-predefined variables. For example, if you have a custom field of "company" you may now pass {{company}} into the PDF to automatically generate the data from this variable.
 * BUG FIX: Fixed an issue where {{invoice_date}} would be set to the current date when regenerating PDF's.
