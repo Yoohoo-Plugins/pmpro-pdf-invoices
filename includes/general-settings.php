@@ -30,7 +30,7 @@ function pmpro_pdf_invoice_settings_page() {
 
 	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'set_template'){
 		$template_selected = !empty($_GET['template']) ? $_GET['template'] : false;
-		if($template_selected === 'order' || $template_selected === 'corporate'){
+		if ( ! empty( $template_selected ) ) {
 	        try{
 	        	$template_body = file_get_contents( PMPRO_PDF_DIR . '/templates/' . $template_selected . '.html' );
 
@@ -459,6 +459,12 @@ if (false !== $status && $status == 'valid') {
 			<div class='content'>
 				<small><?php esc_html_e( 'Click on a tile below to apply template to your invoices', 'pmpro-pdf-invoices' ); ?></small>
 				<br><br>
+				<div class='template_tile' data-template='blank'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/blank_template.jpg'; ?>' />
+					<div class='hover'>
+						<?php esc_html_e( 'Blank Template', 'pmpro-pdf-invoices' ); ?>
+					</div>
+				</div>
 				<div class='template_tile' data-template='order'>
 					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/default_template.jpg'; ?>' />
 					<div class='hover'>
@@ -469,6 +475,18 @@ if (false !== $status && $status == 'valid') {
 					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/corp_template.jpg'; ?>' />
 					<div class='hover'>
 						<?php esc_html_e( 'Corporate Template', 'pmpro-pdf-invoices' ); ?>
+					</div>
+				</div>
+				<div class='template_tile' data-template='green'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/green_template.jpg'; ?>' />
+					<div class='hover'>
+						<?php esc_html_e( 'Green', 'pmpro-pdf-invoices' ); ?>
+					</div>
+				</div>
+				<div class='template_tile' data-template='split'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/split_template.jpg'; ?>' />
+					<div class='hover'>
+						<?php esc_html_e( 'Split', 'pmpro-pdf-invoices' ); ?>
 					</div>
 				</div>
 				<br><br>
