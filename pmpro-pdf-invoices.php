@@ -489,7 +489,9 @@ function pmpropdf_download_invoice( $order_code ) {
 
 		$download_url .= "?access=$access_key";
 
-		header("Location: " . $download_url);
+		header('Content-type: application/pdf');
+		header('Content-Disposition: attachment; filename="'.$invoice_name.'"');
+		readfile($download_url);
 
 		/**
 		 * This is removed to support the force htaccess redirect
