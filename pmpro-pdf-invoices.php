@@ -5,7 +5,7 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.2
+ * Version: 1.20
  * License: GPL2 or later
  * Tested up to: 6.0
  * Requires PHP: 7.2
@@ -37,7 +37,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.2' );
+define( 'PMPRO_PDF_VERSION', '1.20' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -902,6 +902,7 @@ function pmpropdf_enqueue_scripts_styles() {
 	);
 
 	wp_enqueue_script( 'pmpro-pdf-admin' );
+	wp_enqueue_style( 'pmpro-pdf-admin-css', plugins_url( '/includes/css/admin.css', __FILE__ ), array(), PMPRO_PDF_VERSION );
 }
 add_action( 'admin_enqueue_scripts', 'pmpropdf_enqueue_scripts_styles' );
 
@@ -929,3 +930,111 @@ function pmpropdf_ajax_generate_pdf_invoice() {
 	die();
 }
 add_action( 'wp_ajax_pmpropdf_ajax_generate_pdf_invoice', 'pmpropdf_ajax_generate_pdf_invoice' );
+
+
+// License Checks Below
+/**
+ * Show a notice for no license keys in the plugin settings
+ *
+ * @param [type] $plugin_file
+ * @param [type] $plugin_data
+ * @param [type] $status
+ * @return void
+ */
+function pmpropdf_after_plugin_row( $plugin_file, $plugin_data, $status ) {
+	
+	// If there's already an update just bail, don't show the bump.
+	if ( ! empty( $plugin_data ) && ! empty( $plugin_data['new_version'] ) && $plugin_data['new_version'] ) {
+		return;
+	}
+
+	$license_key = trim( get_option( 'pmpro_pdf_invoice_license_key' ) );
+	$license_valid = false;
+
+	if ( ! empty( $license_key ) ) {
+		// License could be valid, let's try check the status.
+		$license_status = get_option( 'pmpro_pdf_invoice_license_status', true );
+
+		if ( $license_status !== 'valid' ) {
+			$license_valid = false;
+		} else {
+			$license_valid = true;
+		}
+
+	} else {
+		$license_valid = false;
+	}
+
+	// If the license isn't valid.
+	if ( ! $license_valid && current_user_can( 'update_plugins' ) ) {
+	?>
+		<tr class="plugin-update-tr active" id="pmpropdf-plugin-update" style="border-top:none">
+			<td class="plugin-update colspanchange" colspan="4">
+				<div class="update-message notice inline notice-warning notice-alt">
+					<p><?php 
+					echo sprintf( __( '%s your copy of PMPro PDF Invoices to receive access to automatic upgrades and support. Need a license key? %s', 'pmpro-pdf-invoices' ), '<a href="' . admin_url( 'options-general.php?page=pmpro_pdf_invoices_license_key#tab_0' ) . '"> ' . __( 'Register', 'pmpro-pdf-invoices' ) . '</a>', '<a href="https://yoohooplugins.com/plugins/paid-memberships-pro-pdf-invoices/" target="_blank" rel="nofollow">' . __( 'Purchase one now.', 'pmpro-pdf-invoices' ) . '</a>' ); 
+					?></p>
+				</div>
+			</td>
+		</tr>
+	<script type='text/javascript'> 
+		jQuery('#pmpropdf-plugin-update').prev('tr').addClass('update'); 
+	</script>
+	<?php
+	}
+}
+add_action( 'after_plugin_row_pmpro-pdf-invoices/pmpro-pdf-invoices.php', 'pmpropdf_after_plugin_row', 10, 3 );
+
+/** Helper function to see if PDF license key is active */
+function pmpropdf_is_license_active(){
+	$license_key = trim( get_option( 'pmpro_pdf_invoice_license_key' ) );
+	$license_valid = false;
+
+	// license cache
+	$license_valid = get_transient( 'pmpro_pdf_invoice_license_valid' );
+
+	// Return this if there is a transient already.
+	if ( $license_valid ) {
+		return $license_valid;
+	}
+
+	if ( ! empty( $license_key ) ) {
+		// License could be valid, let's try check the status.
+		$license_status = get_option( 'pmpro_pdf_invoice_license_status', true );
+
+		if ( $license_status !== 'valid' ) {
+			$license_valid = false;
+		} else {
+			$license_valid = true;
+		}
+
+	} else {
+		$license_valid = false;
+	}
+
+	// Cache the license status for 24 hours.
+	set_transient( 'pmpro_pdf_invoice_license_valid', $license_valid, 1 * DAY_IN_SECONDS );
+
+	return $license_valid;
+}
+
+function pmpropdf_show_no_license_warning() {
+
+	// Show on all PMPro pages.
+	if ( empty( $_REQUEST['page'] ) || strpos( $_REQUEST['page'], 'pmpro' ) === false ) {
+		return;
+	}
+
+	$license_valid = pmpropdf_is_license_active();
+
+	if ( ! $license_valid ) {
+		?>
+		<div class="notice pmpropdf-notice-error">
+			<p><?php 
+			echo sprintf( __( '%s your copy of PMPro PDF Invoices to receive access to automatic upgrades and support. Need a license key? %s', 'pmpro-pdf-invoices' ), '<a href="' . admin_url( 'options-general.php?page=pmpro_pdf_invoices_license_key#tab_0' ) . '"> ' . __( 'Register', 'pmpro-pdf-invoices' ) . '</a>', '<a href="https://yoohooplugins.com/plugins/paid-memberships-pro-pdf-invoices/" target="_blank" rel="nofollow">' . __( 'Purchase one now.', 'pmpro-pdf-invoices' ) . '</a>' ); 
+			?></p>
+		</div>
+		<?php
+	}
+}
+add_action( 'admin_notices', 'pmpropdf_show_no_license_warning' );

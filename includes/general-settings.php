@@ -138,6 +138,8 @@ function pmpro_pdf_invoice_settings_page() {
 		} else {
 			pmpro_pdf_admin_notice( __( 'Unable to activate license, please ensure your license is valid.', 'pmpro-pdf-invoices' ), 'error is-dismissible' );
 		}
+
+		delete_transient( 'pmpro_pdf_invoice_license_valid' );
 	}
 	// Deactivate license.
 	if ( isset( $_POST['deactivate_license'] ) ) {
@@ -159,9 +161,8 @@ function pmpro_pdf_invoice_settings_page() {
 		delete_option( 'pmpro_pdf_invoice_license_expires' );
 		$status = false;
 		pmpro_pdf_admin_notice( __( 'Deactivated license successfully.', 'pmpro-pdf-invoices' ), 'success is-dismissible' );
+		delete_transient( 'pmpro_pdf_invoice_license_valid' );
 	}
-
-
 }
 
 //General Settings Save
@@ -211,7 +212,7 @@ if (false !== $status && $status == 'valid') {
 			<div class='pmpropdf_tab' data-tab='2'><?php esc_html_e( 'Settings', 'pmpro-pdf-invoices' ); ?></div>
 			<div class='pmpropdf_tab' data-tab='4'><?php esc_html_e( 'Shortcode', 'pmpro-pdf-invoices' ); ?></div>
 			<div class='pmpropdf_tab' data-tab='3'><?php esc_html_e( 'Info', 'pmpro-pdf-invoices' ); ?></div>
-			<div class='pmpropdf_tab <?php echo $license_tab_badge; ?>' data-tab='0'><?php esc_html_e( 'License', 'pmpro-pdf-invoices' ); ?></div>
+			<div class='pmpropdf_tab <?php echo esc_attr( $license_tab_badge ); ?>' data-tab='0'><?php esc_html_e( 'License', 'pmpro-pdf-invoices' ); ?></div>
 		</div>
 
 		<div class='wp-editor-container pmpropdf_option_section' data-tab='0'>

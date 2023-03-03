@@ -1,0 +1,11 @@
+/** Admin Notices **/
+.pmpropdf-notice-error {
+    background: #F8D7D9;
+    border: 1px solid #DF3B2F;
+    border-left-width: 4px;
+    padding: 10px;
+}
+
+.pmpropdf-notice-error p {
+    font-size: 14px;
+}
