@@ -2,10 +2,10 @@
 Contributors: andrewza, yoohooplugins
 Tags: pdf, pdf invoice, invoices
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4GC4JEZH7KSKL
-Requires at least: 4.9
-Tested up to: 6.0
-Requires PHP: 7.0
-Stable tag: 1.11
+Requires at least: 5.0
+Tested up to: 6.1
+Requires PHP: 7.2
+Stable tag: 1.20
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,12 +25,13 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
-= 1.2 - TBD =
+= 1.20 - 2023-03-07 =
 * ENHANCEMENT: Added new templates: green, blank and split.
 * ENHANCEMENT: Adjusted logic for [pmpropdf_download_list], this now allows logged-in non-members to access past PDF invoices.
 * ENHANCEMENT: Added logic to generate single PDF Invoices from the Paid Memberships Pro Orders admin table.
 * ENHANCEMENT: Added more PDF variables: {{admin_email}}, {{membership_description}} and {{membership_level_confirmation_message}}.
 * ENHANCEMENT: Only show the NGINX nudge message on PMPro dashboard pages.
+* ENHANCEMENT: Added a filter to adjust the DOMPDF object before it's used to generate the PDF: pmpropdf_dompdf_before_render.
 * BUG FIX: Fixed an issue when regenerating PDF invoices would give you the current date and not the date of the order.
 
 = 1.11 - 2022-09-14 =

@@ -7,7 +7,7 @@
  * Author URI: https://yoohooplugins.com
  * Version: 1.20
  * License: GPL2 or later
- * Tested up to: 6.0
+ * Tested up to: 6.1
  * Requires PHP: 7.2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: pmpro-pdf-invoices
@@ -184,7 +184,7 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 
 	$user = get_user_by('ID', $order_data->user_id);
 
-	$dompdf = new Dompdf( array( 'enable_remote' => true ) );
+	$dompdf = new Dompdf( apply_filters( 'pmpropdf_dompdf_args', array( 'enable_remote' => true ) ) );
 	$body = pmpropdf_get_order_template_html();
 
 	// Build the string for billing data.
@@ -265,6 +265,9 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 	}
 
 	$dompdf->loadHtml( $body );
+
+	$dompdf = apply_filters( 'pmpropdf_dompdf_before_render', $dompdf );
+
 	$dompdf->render();
 
 	// This allows calling functions to get access to the dompdf instance, instead of storing
