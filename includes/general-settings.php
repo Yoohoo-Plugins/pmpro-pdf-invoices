@@ -30,7 +30,7 @@ function pmpro_pdf_invoice_settings_page() {
 
 	if(isset($_GET['sub_action']) && $_GET['sub_action'] === 'set_template'){
 		$template_selected = !empty($_GET['template']) ? $_GET['template'] : false;
-		if($template_selected === 'order' || $template_selected === 'corporate'){
+		if ( ! empty( $template_selected ) ) {
 	        try{
 	        	$template_body = file_get_contents( PMPRO_PDF_DIR . '/templates/' . $template_selected . '.html' );
 
@@ -138,6 +138,8 @@ function pmpro_pdf_invoice_settings_page() {
 		} else {
 			pmpro_pdf_admin_notice( __( 'Unable to activate license, please ensure your license is valid.', 'pmpro-pdf-invoices' ), 'error is-dismissible' );
 		}
+
+		delete_transient( 'pmpro_pdf_invoice_license_valid' );
 	}
 	// Deactivate license.
 	if ( isset( $_POST['deactivate_license'] ) ) {
@@ -159,9 +161,8 @@ function pmpro_pdf_invoice_settings_page() {
 		delete_option( 'pmpro_pdf_invoice_license_expires' );
 		$status = false;
 		pmpro_pdf_admin_notice( __( 'Deactivated license successfully.', 'pmpro-pdf-invoices' ), 'success is-dismissible' );
+		delete_transient( 'pmpro_pdf_invoice_license_valid' );
 	}
-
-
 }
 
 //General Settings Save
@@ -211,7 +212,7 @@ if (false !== $status && $status == 'valid') {
 			<div class='pmpropdf_tab' data-tab='2'><?php esc_html_e( 'Settings', 'pmpro-pdf-invoices' ); ?></div>
 			<div class='pmpropdf_tab' data-tab='4'><?php esc_html_e( 'Shortcode', 'pmpro-pdf-invoices' ); ?></div>
 			<div class='pmpropdf_tab' data-tab='3'><?php esc_html_e( 'Info', 'pmpro-pdf-invoices' ); ?></div>
-			<div class='pmpropdf_tab <?php echo $license_tab_badge; ?>' data-tab='0'><?php esc_html_e( 'License', 'pmpro-pdf-invoices' ); ?></div>
+			<div class='pmpropdf_tab <?php echo esc_attr( $license_tab_badge ); ?>' data-tab='0'><?php esc_html_e( 'License', 'pmpro-pdf-invoices' ); ?></div>
 		</div>
 
 		<div class='wp-editor-container pmpropdf_option_section' data-tab='0'>
@@ -459,6 +460,12 @@ if (false !== $status && $status == 'valid') {
 			<div class='content'>
 				<small><?php esc_html_e( 'Click on a tile below to apply template to your invoices', 'pmpro-pdf-invoices' ); ?></small>
 				<br><br>
+				<div class='template_tile' data-template='blank'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/blank_template.jpg'; ?>' />
+					<div class='hover'>
+						<?php esc_html_e( 'Blank Template', 'pmpro-pdf-invoices' ); ?>
+					</div>
+				</div>
 				<div class='template_tile' data-template='order'>
 					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/default_template.jpg'; ?>' />
 					<div class='hover'>
@@ -469,6 +476,18 @@ if (false !== $status && $status == 'valid') {
 					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/corp_template.jpg'; ?>' />
 					<div class='hover'>
 						<?php esc_html_e( 'Corporate Template', 'pmpro-pdf-invoices' ); ?>
+					</div>
+				</div>
+				<div class='template_tile' data-template='green'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/green_template.jpg'; ?>' />
+					<div class='hover'>
+						<?php esc_html_e( 'Green', 'pmpro-pdf-invoices' ); ?>
+					</div>
+				</div>
+				<div class='template_tile' data-template='split'>
+					<img src='<?php echo plugin_dir_url(__FILE__) . '/images/split_template.jpg'; ?>' />
+					<div class='hover'>
+						<?php esc_html_e( 'Split', 'pmpro-pdf-invoices' ); ?>
 					</div>
 				</div>
 				<br><br>
