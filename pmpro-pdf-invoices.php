@@ -5,9 +5,9 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.20
+ * Version: 1.21
  * License: GPL2 or later
- * Tested up to: 6.1
+ * Tested up to: 6.1.1
  * Requires PHP: 7.2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: pmpro-pdf-invoices
@@ -37,7 +37,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.20' );
+define( 'PMPRO_PDF_VERSION', '1.21' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -647,6 +647,35 @@ function pmpropdf_download_list_shortcode_handler(){
 	}
 add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
 
+/**
+ * Shortcode handler for the download all as ZIP file
+*/
+function pmpropdf_download_all_zip_shortcode_handler( $atts ){
+	$title = __("Download all PDF's as ZIP", 'pmpro-pdf-invoices');
+	if(!empty($atts['title'])){
+		$title = sanitize_text_field($atts['title']);
+	}
+
+	if(class_exists('ZipArchive') && is_user_logged_in() ) {
+		global $wpdb, $current_user;
+
+		$invoices = $wpdb->get_results("
+			SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
+			FROM $wpdb->pmpro_membership_orders
+			WHERE user_id = '$current_user->ID'
+			AND status NOT
+			IN('review', 'token', 'error')
+			ORDER BY timestamp DESC"
+		);
+
+		if(!empty($invoices) && count($invoices) > 0){
+			return "<a href='?pmpro_pdf_invoices_action=download_zip' target='_BLANK'>$title</a>";
+		}
+	}
+	return '';
+
+}
+add_shortcode('pmpropdf_download_all_zip', 'pmpropdf_download_all_zip_shortcode_handler');
 
 /**
  * Checks if we received a request to perform a zip of the current users documents
@@ -900,6 +929,7 @@ function pmpropdf_enqueue_scripts_styles() {
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		'admin_url' => esc_url( admin_url( '?pmpropdf=') ),
 		'download_text' => __( 'Download PDF', 'pmpro-pdf-invoices' ),
+		'loading_gif' => plugins_url( '/includes/images/pmpropdf-loading.gif', __FILE__ ),
 		'nonce' => wp_create_nonce( 'pmpro-pdf-invoices-single' ),
 		)  
 	);
