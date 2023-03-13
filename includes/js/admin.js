@@ -7,8 +7,12 @@ jQuery(document).ready(function ($) {
             order_code: jQuery(this).attr('order_code'),
             download_link: pmpro_pdf_admin.admin_url,
             download_text: pmpro_pdf_admin.download_text,
+            loading_gif: pmpro_pdf_admin.loading_gif,
             nonce: pmpro_pdf_admin.nonce
         };
+
+        // Do loading on click.
+        jQuery(this).html('<img src="' + data.loading_gif + '" alt="loading gif" width="20px"/>');
 
         jQuery.ajax({
             url: ajaxurl,
@@ -20,7 +24,7 @@ jQuery(document).ready(function ($) {
             },
             success: function (responseHTML) {
                 if (responseHTML == 'error') {
-                    alert('error');
+                    jQuery(this).html('Error generating PDF. Please refresh and try again.');
                 } else {
                     jQuery('#pmpro-pdf-generate_' + data.order_code).replaceWith('<a href="' + data.download_link + data.order_code + '" target="_blank">' + data.download_text + '</a>');
                 }

@@ -929,6 +929,7 @@ function pmpropdf_enqueue_scripts_styles() {
 		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		'admin_url' => esc_url( admin_url( '?pmpropdf=') ),
 		'download_text' => __( 'Download PDF', 'pmpro-pdf-invoices' ),
+		'loading_gif' => plugins_url( '/includes/images/pmpropdf-loading.gif', __FILE__ ),
 		'nonce' => wp_create_nonce( 'pmpro-pdf-invoices-single' ),
 		)  
 	);
