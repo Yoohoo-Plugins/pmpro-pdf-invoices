@@ -647,6 +647,35 @@ function pmpropdf_download_list_shortcode_handler(){
 	}
 add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
 
+/**
+ * Shortcode handler for the download all as ZIP file
+*/
+function pmpropdf_download_all_zip_shortcode_handler( $atts ){
+	$title = __("Download all PDF's as ZIP", 'pmpro-pdf-invoices');
+	if(!empty($atts['title'])){
+		$title = sanitize_text_field($atts['title']);
+	}
+
+	if(class_exists('ZipArchive') && is_user_logged_in() ) {
+		global $wpdb, $current_user;
+
+		$invoices = $wpdb->get_results("
+			SELECT *, UNIX_TIMESTAMP(timestamp) as timestamp
+			FROM $wpdb->pmpro_membership_orders
+			WHERE user_id = '$current_user->ID'
+			AND status NOT
+			IN('review', 'token', 'error')
+			ORDER BY timestamp DESC"
+		);
+
+		if(!empty($invoices) && count($invoices) > 0){
+			return "<a href='?pmpro_pdf_invoices_action=download_zip' target='_BLANK'>$title</a>";
+		}
+	}
+	return '';
+
+}
+add_shortcode('pmpropdf_download_all_zip', 'pmpropdf_download_all_zip_shortcode_handler');
 
 /**
  * Checks if we received a request to perform a zip of the current users documents
