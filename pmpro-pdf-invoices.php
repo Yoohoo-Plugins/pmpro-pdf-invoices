@@ -53,7 +53,7 @@ include PMPRO_PDF_DIR . '/includes/general-settings.php';
 function pmpropdf_init() {
 
 	// Load text domain
-	load_plugin_textdomain( 'pmpro-pdf-invoices', false, plugin_basename( __FILE__ ) . '/languages' );
+	load_plugin_textdomain( 'pmpro-pdf-invoices', false, PMPRO_PDF_DIR . '/languages'  );
 
 
 	if ( isset( $_REQUEST['pmpropdf'] ) ) {
