@@ -198,7 +198,7 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 		$billing_details = '';
 	}
 
-	$date = date_i18n( get_option( 'date_format' ), strtotime( $order_data->timestamp ) );
+	$date = date_i18n( get_option( 'date_format' ), $order_data->getTimestamp() );
 	
 	$gateway = pmpro_gateways();
 
