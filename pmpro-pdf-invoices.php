@@ -183,17 +183,18 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 	}
 
 	$user = get_user_by('ID', $order_data->user_id);
+	$order = new MemberOrder( $order_data->code );
 
 	$dompdf = new Dompdf( apply_filters( 'pmpropdf_dompdf_args', array( 'enable_remote' => true ) ) );
 	$body = pmpropdf_get_order_template_html();
 
 	// Build the string for billing data.
-	if ( ! empty( $order_data->billing_name ) ) {
+	if ( ! empty( $order->billing->name ) ) {
 		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
-		$billing_details .= "<p>" . $order_data->billing_name . "<br>";
-		$billing_details .= $order_data->billing_street . "<br>";
-		$billing_details .= $order_data->billing_zip . " " . $order_data->billing_city . " (" . $order_data->billing_state . "), " . $order_data->billing_country . "<br>";
-		$billing_details .= $order_data->billing_phone . "</p>";
+		$billing_details .= "<p>" . $order->billing->name . "<br>";
+		$billing_details .= $order->billing->street . "<br>";
+		$billing_details .= $order->billing->zip . " " . $order->billing->city . " (" . $order->billing->state . "), " . $order->billing->country . "<br>";
+		$billing_details .= $order->billing->phone . "</p>";
 	} else {
 		$billing_details = '';
 	}
