@@ -25,6 +25,12 @@ Paid Memberships Pro PDF Invoices plugin will generate PDF Invoices for members 
 Yes the PDF templates are customizable and use general HTML code with custom tags to replace values in the template.
 
 == Changelog ==
+= 1.22 - TBD =
+* ENHANCEMENT: Added support for Pay By Check Add On email reminders.
+* ENHANCEMENT: Improved license checking functionality more often and regularly.
+* BUG FIX: Fixed an issue where {{billing_address}} wasn't displaying correctly.
+* BUG FIX: Fixed an issue in some cases when saving an order in the admin, would cause the PDF date to show the current date and not the order date.
+
 = 1.21 - 2023-03-13 =
 * REFACTOR: Reverted the 'pmpropdf_download_all_zip' shortcode that went missing from previous update and neatened it up slightly.
 * ENHANCEMENT: Added a small loading icon when generating the PDF from the Member Orders admin page.
