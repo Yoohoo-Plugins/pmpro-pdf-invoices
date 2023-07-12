@@ -111,8 +111,10 @@ function pmpropdf_attach_pdf_email( $attachments, $email ) {
 		return $attachments;
 	}
 
-	// Let's send it only with checkout emails and invoice email
-	if( strpos( $email->template, "checkout_" ) === false && $email->template != 'invoice' && $email->template != 'billable_invoice') {
+	$email_templates = apply_filters( 'pmpropdf_pdf_included_email_templates', array( 'invoice', 'billable_invoice', 'check_pending', 'check_pending_reminder' ) );
+	
+	// If the email template isn't a checkout email or in the list of email templates, bail.
+	if ( strpos( $email->template, "checkout_" ) === false && ! in_array( $email->template, $email_templates ) ) {
 		return $attachments;
 	}
 
