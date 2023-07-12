@@ -1034,22 +1034,15 @@ function pmpropdf_is_license_active(){
 		return $license_valid;
 	}
 
+	// Check if it's still valid or not.
 	if ( ! empty( $license_key ) ) {
-		// License could be valid, let's try check the status.
-		$license_status = get_option( 'pmpro_pdf_invoice_license_status', true );
-
-		if ( $license_status !== 'valid' ) {
-			$license_valid = false;
-		} else {
-			$license_valid = true;
-		}
-
+		$license_valid = pmpropdf_check_license_valid_api( $license_key );
 	} else {
 		$license_valid = false;
 	}
 
-	// Cache the license status for 24 hours.
-	set_transient( 'pmpro_pdf_invoice_license_valid', $license_valid, 1 * DAY_IN_SECONDS );
+	// Cache the license status for 1 week and check again to save our own resources.
+	set_transient( 'pmpro_pdf_invoice_license_valid', $license_valid, 7 * DAY_IN_SECONDS );
 
 	return $license_valid;
 }
@@ -1074,3 +1067,37 @@ function pmpropdf_show_no_license_warning() {
 	}
 }
 add_action( 'admin_notices', 'pmpropdf_show_no_license_warning' );
+
+/**
+ * Helper function to ping our license server to make sure the license key is still valid or not.
+ *
+ * @param string $license_key
+ * @return bool $valid Whether or not the license checker is valid (License server).
+ */
+function pmpropdf_check_license_valid_api( $license_key ) {
+	$api_params = array(
+			'edd_action' => 'check_license',
+			'license'    => $license_key,
+			'item_id'    => PMPRO_PDF_PLUGIN_ID, // The ID of the item in EDD
+			'url'        => home_url()
+		);
+
+	// Call the custom API.
+	$response = wp_remote_post( YOOHOO_STORE, array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+
+	// Make sure the response came back okay.
+	if ( is_wp_error( $response ) ) {
+		return false;
+	}
+
+	// Decode the license data.
+	$license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+	if ( $license_data->license == 'valid' ) {
+		update_option( 'pmpro_pdf_invoice_license_status', 'valid' );
+		return true;
+	} else {
+		update_option( 'pmpro_pdf_invoice_license_status', false );
+		return false;
+	}
+}
