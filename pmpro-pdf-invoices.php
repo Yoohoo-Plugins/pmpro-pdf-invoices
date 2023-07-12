@@ -329,38 +329,39 @@ function pmpropdf_generate_sample_pdf(){
 
 /**
  * Generate the invoice name based on the invoice code.
- * @since 1.10
+ * @since 1.22
  */
-function pmpropdf_admin_column_header( $order_id ) {
+function pmpropdf_admin_column_header( $columns ) {
 	// Only load this for orders.
 	if ( ! current_user_can( 'pmpro_orders' ) ) {
+		return $columns;
+	}
+
+	$columns['pmpro_pdf'] = __( 'Invoice PDF', 'pmpro-pdf-invoices' );
+	return $columns;
+}
+add_filter( 'pmpro_manage_orderslist_columns', 'pmpropdf_admin_column_header' );
+
+
+function my_pmpro_pdf_column_stuff( $column, $order_id) {
+	if ( $column != 'pmpro_pdf' ) {
 		return;
 	}
 
-	echo '<th>' . esc_html__( 'Invoice PDF', 'pmpro-pdf-invoices' ) . '</th>';
-}
-add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
+	$order = new MemberOrder( $order_id );
 
-/**
- * Add column body to the orders page for PDF Invoices.
- *
- * @param MemberObject $order The Member Order.
- */
-function pmpropdf_admin_column_body( $order ) {
-
-	// Only load this for orders.
 	if ( ! current_user_can( 'pmpro_orders' ) ) {
 		return;
 	}
 
 	if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($order->code) ) ){
-	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '" target="_blank">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
+		echo '<a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '" target="_blank">' . esc_html__( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a>';
 	} else {
-		echo '<td><a href="javascript:void(0)" id="pmpro-pdf-generate_' . esc_attr( $order->code ) . '" class="pmpro-pdf-generate" order_code="' . esc_attr( $order->code ) . '">Generate PDF</a></td>';
+		echo '<a href="javascript:void(0)" id="pmpro-pdf-generate_' . esc_attr( $order->code ) . '" class="pmpro-pdf-generate" order_code="' . esc_attr( $order->code ) . '">' . esc_html__( 'Generate PDF', 'pmpro-pdf-invoices' ) . '</a>';
 	}
 
 }
-add_action( 'pmpro_orders_extra_cols_body', 'pmpropdf_admin_column_body' );
+add_action( 'pmpro_manage_orderlist_custom_column', 'my_pmpro_pdf_column_stuff', 10, 2 );
 
 /**
  * Helper function to get member order when class not available.
