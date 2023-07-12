@@ -5,9 +5,9 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.21
+ * Version: 1.22
  * License: GPL2 or later
- * Tested up to: 6.1.1
+ * Tested up to: 6.2
  * Requires PHP: 7.2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: pmpro-pdf-invoices
@@ -37,7 +37,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.21' );
+define( 'PMPRO_PDF_VERSION', '1.22' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -53,7 +53,7 @@ include PMPRO_PDF_DIR . '/includes/general-settings.php';
 function pmpropdf_init() {
 
 	// Load text domain
-	load_plugin_textdomain( 'pmpro-pdf-invoices', false, plugin_basename( __FILE__ ) . '/languages' );
+	load_plugin_textdomain( 'pmpro-pdf-invoices', false, PMPRO_PDF_DIR . '/languages'  );
 
 
 	if ( isset( $_REQUEST['pmpropdf'] ) ) {
@@ -111,8 +111,10 @@ function pmpropdf_attach_pdf_email( $attachments, $email ) {
 		return $attachments;
 	}
 
-	// Let's send it only with checkout emails and invoice email
-	if( strpos( $email->template, "checkout_" ) === false && $email->template != 'invoice' && $email->template != 'billable_invoice') {
+	$email_templates = apply_filters( 'pmpropdf_pdf_included_email_templates', array( 'invoice', 'billable_invoice', 'check_pending', 'check_pending_reminder' ) );
+	
+	// If the email template isn't a checkout email or in the list of email templates, bail.
+	if ( strpos( $email->template, "checkout_" ) === false && ! in_array( $email->template, $email_templates ) ) {
 		return $attachments;
 	}
 
@@ -183,22 +185,23 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 	}
 
 	$user = get_user_by('ID', $order_data->user_id);
+	$order = new MemberOrder( $order_data->code );
 
 	$dompdf = new Dompdf( apply_filters( 'pmpropdf_dompdf_args', array( 'enable_remote' => true ) ) );
 	$body = pmpropdf_get_order_template_html();
 
 	// Build the string for billing data.
-	if ( ! empty( $order_data->billing_name ) ) {
+	if ( ! empty( $order->billing->name ) ) {
 		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
-		$billing_details .= "<p>" . $order_data->billing_name . "<br>";
-		$billing_details .= $order_data->billing_street . "<br>";
-		$billing_details .= $order_data->billing_zip . " " . $order_data->billing_city . " (" . $order_data->billing_state . "), " . $order_data->billing_country . "<br>";
-		$billing_details .= $order_data->billing_phone . "</p>";
+		$billing_details .= "<p>" . $order->billing->name . "<br>";
+		$billing_details .= $order->billing->street . "<br>";
+		$billing_details .= $order->billing->zip . " " . $order->billing->city . " (" . $order->billing->state . "), " . $order->billing->country . "<br>";
+		$billing_details .= $order->billing->phone . "</p>";
 	} else {
 		$billing_details = '';
 	}
 
-	$date = date_i18n( get_option( 'date_format' ), strtotime( $order_data->timestamp ) );
+	$date = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
 	
 	$gateway = pmpro_gateways();
 
@@ -326,38 +329,39 @@ function pmpropdf_generate_sample_pdf(){
 
 /**
  * Generate the invoice name based on the invoice code.
- * @since 1.10
+ * @since 1.22
  */
-function pmpropdf_admin_column_header( $order_id ) {
+function pmpropdf_admin_column_header( $columns ) {
 	// Only load this for orders.
 	if ( ! current_user_can( 'pmpro_orders' ) ) {
+		return $columns;
+	}
+
+	$columns['pmpro_pdf'] = __( 'Invoice PDF', 'pmpro-pdf-invoices' );
+	return $columns;
+}
+add_filter( 'pmpro_manage_orderslist_columns', 'pmpropdf_admin_column_header' );
+
+
+function my_pmpro_pdf_column_stuff( $column, $order_id) {
+	if ( $column != 'pmpro_pdf' ) {
 		return;
 	}
 
-	echo '<th>' . esc_html__( 'Invoice PDF', 'pmpro-pdf-invoices' ) . '</th>';
-}
-add_action( 'pmpro_orders_extra_cols_header', 'pmpropdf_admin_column_header' );
+	$order = new MemberOrder( $order_id );
 
-/**
- * Add column body to the orders page for PDF Invoices.
- *
- * @param MemberObject $order The Member Order.
- */
-function pmpropdf_admin_column_body( $order ) {
-
-	// Only load this for orders.
 	if ( ! current_user_can( 'pmpro_orders' ) ) {
 		return;
 	}
 
 	if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($order->code) ) ){
-	echo '<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '" target="_blank">' . __( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a></td>';
+		echo '<a href="' . esc_url( admin_url( '?pmpropdf=' . $order->code ) ). '" target="_blank">' . esc_html__( 'Download PDF', 'pmpro-pdf-invoices' ) .'</a>';
 	} else {
-		echo '<td><a href="javascript:void(0)" id="pmpro-pdf-generate_' . esc_attr( $order->code ) . '" class="pmpro-pdf-generate" order_code="' . esc_attr( $order->code ) . '">Generate PDF</a></td>';
+		echo '<a href="javascript:void(0)" id="pmpro-pdf-generate_' . esc_attr( $order->code ) . '" class="pmpro-pdf-generate" order_code="' . esc_attr( $order->code ) . '">' . esc_html__( 'Generate PDF', 'pmpro-pdf-invoices' ) . '</a>';
 	}
 
 }
-add_action( 'pmpro_orders_extra_cols_body', 'pmpropdf_admin_column_body' );
+add_action( 'pmpro_manage_orderlist_custom_column', 'my_pmpro_pdf_column_stuff', 10, 2 );
 
 /**
  * Helper function to get member order when class not available.
@@ -1031,22 +1035,15 @@ function pmpropdf_is_license_active(){
 		return $license_valid;
 	}
 
+	// Check if it's still valid or not.
 	if ( ! empty( $license_key ) ) {
-		// License could be valid, let's try check the status.
-		$license_status = get_option( 'pmpro_pdf_invoice_license_status', true );
-
-		if ( $license_status !== 'valid' ) {
-			$license_valid = false;
-		} else {
-			$license_valid = true;
-		}
-
+		$license_valid = pmpropdf_check_license_valid_api( $license_key );
 	} else {
 		$license_valid = false;
 	}
 
-	// Cache the license status for 24 hours.
-	set_transient( 'pmpro_pdf_invoice_license_valid', $license_valid, 1 * DAY_IN_SECONDS );
+	// Cache the license status for 1 week and check again to save our own resources.
+	set_transient( 'pmpro_pdf_invoice_license_valid', $license_valid, 7 * DAY_IN_SECONDS );
 
 	return $license_valid;
 }
@@ -1071,3 +1068,37 @@ function pmpropdf_show_no_license_warning() {
 	}
 }
 add_action( 'admin_notices', 'pmpropdf_show_no_license_warning' );
+
+/**
+ * Helper function to ping our license server to make sure the license key is still valid or not.
+ *
+ * @param string $license_key
+ * @return bool $valid Whether or not the license checker is valid (License server).
+ */
+function pmpropdf_check_license_valid_api( $license_key ) {
+	$api_params = array(
+			'edd_action' => 'check_license',
+			'license'    => $license_key,
+			'item_id'    => PMPRO_PDF_PLUGIN_ID, // The ID of the item in EDD
+			'url'        => home_url()
+		);
+
+	// Call the custom API.
+	$response = wp_remote_post( YOOHOO_STORE, array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+
+	// Make sure the response came back okay.
+	if ( is_wp_error( $response ) ) {
+		return false;
+	}
+
+	// Decode the license data.
+	$license_data = json_decode( wp_remote_retrieve_body( $response ) );
+
+	if ( $license_data->license == 'valid' ) {
+		update_option( 'pmpro_pdf_invoice_license_status', 'valid' );
+		return true;
+	} else {
+		update_option( 'pmpro_pdf_invoice_license_status', false );
+		return false;
+	}
+}
