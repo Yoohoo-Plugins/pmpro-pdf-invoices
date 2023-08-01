@@ -201,8 +201,11 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 		$billing_details = '';
 	}
 
-	$date = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
-	
+	if ( !empty($_GET['sub_action'] && $_GET['sub_action'] == 'view_sample') ) {
+		$date = date_i18n( get_option( 'date_format' ), current_time( 'timestamp' ) );
+	} else {
+		$date = date_i18n( get_option( 'date_format' ), $order->getTimestamp() );
+	}	
 	$gateway = pmpro_gateways();
 
 	$payment_method = !empty( $order_data->gateway ) ? apply_filters( 'pmpro_pdf_gateway_string', $gateway[$order_data->gateway] ) : __( 'N/A', 'pmpro-pdf-invoices');
