@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Paid Memberships Pro - PDF Invoices
  * Description: Generates PDF Invoices for Paid Memberships Pro Orders.
- * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
+ * Plugin URI: https://yoohooplugins.com/plugins/paid-memberships-pro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
  * Version: 1.22.1
