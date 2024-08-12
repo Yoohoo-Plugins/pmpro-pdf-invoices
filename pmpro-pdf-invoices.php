@@ -629,7 +629,7 @@ function pmpropdf_download_list_shortcode_handler(){
 
 	if(!empty($content)){
 		$table_content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
-		$table_content .= "<table width='100%'' cellpadding='0' cellspacing='0' border='0'>";
+		$table_content .= "<table width='100%' cellpadding='0' cellspacing='0' border='0'>";
 		$table_content .= 	"<thead>";
 		$table_content .= 		"<tr>";
 		$table_content .= 			"<th>" . __("Date", 'paid-memberships-pro' ) . "</th>";
