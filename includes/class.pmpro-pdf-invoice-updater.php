@@ -17,6 +17,7 @@ class PMPro_PDF_Invoice_Updater {
 	private $slug        = '';
 	private $version     = '';
 	private $wp_override = false;
+	private $beta        = false;
 	private $cache_key   = '';
 
 	/**
