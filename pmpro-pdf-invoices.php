@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Paid Memberships Pro - PDF Invoices
  * Description: Generates PDF Invoices for Paid Memberships Pro Orders.
- * Plugin URI: https://yoohooplugins.com/plugins/paid-memberships-pro-pdf-invoices/
+ * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
  * Version: 1.22.1
@@ -52,8 +52,8 @@ include PMPRO_PDF_DIR . '/includes/general-settings.php';
 
 function pmpropdf_init() {
 
-	// Load plugin text domain
-	load_plugin_textdomain( 'pmpro-pdf-invoices', false, dirname( plugin_basename( __FILE__ ) ) . '/languages'  );
+	// Load text domain
+	load_plugin_textdomain( 'pmpro-pdf-invoices', false, PMPRO_PDF_DIR . '/languages'  );
 
 
 	if ( isset( $_REQUEST['pmpropdf'] ) ) {
@@ -190,13 +190,19 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 	$dompdf = new Dompdf( apply_filters( 'pmpropdf_dompdf_args', array( 'enable_remote' => true ) ) );
 	$body = pmpropdf_get_order_template_html();
 
-	// Build the string for billing data.
+	// Build the string for billing data from the order object or $order_data array.
 	if ( ! empty( $order->billing->name ) ) {
 		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
 		$billing_details .= "<p>" . $order->billing->name . "<br>";
-		$billing_details .= $order->billing->street . "<br>";
+		$billing_details .= $order->billing->street . ", " . $order->billing->street2 . "<br>";
 		$billing_details .= $order->billing->zip . " " . $order->billing->city . " (" . $order->billing->state . "), " . $order->billing->country . "<br>";
 		$billing_details .= $order->billing->phone . "</p>";
+	} elseif ( ! empty( $order_data->billing->name ) ) {
+		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
+		$billing_details .= "<p>" . $order_data->billing->name . "<br>";
+		$billing_details .= $order_data->billing->street . ", " . $order_data->billing->street2 . "<br>";
+		$billing_details .= $order_data->billing->zip . " " . $order_data->billing->city . " (" . $order_data->billing->state . "), " . $order_data->billing->country . "<br>";
+		$billing_details .= $order_data->billing->phone . "</p>";
 	} else {
 		$billing_details = '';
 	}
