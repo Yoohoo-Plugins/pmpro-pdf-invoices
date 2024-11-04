@@ -623,7 +623,7 @@ function pmpropdf_download_list_shortcode_handler(){
 			$membership_level = $invoice->membership_level->name;
 
 			if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
-				$content .= '<tr>';
+				$content = '<tr>';
 				$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
 				$content .=		'<td>' . $membership_level . '</td>';
 				$content .=		'<td>' . pmpro_formatPrice($invoice->total) . '</td>';
