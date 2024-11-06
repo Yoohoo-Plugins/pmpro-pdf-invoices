@@ -1,36 +1,41 @@
-# Copyright (C) 2023 Yoohoo Plugins
-# This file is distributed under the GPL2 or later.
+# Copyright (C) 2024 Yoohoo Plugins
+# This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - PDF Invoices 1.22\n"
+"Project-Id-Version: Paid Memberships Pro - PDF Invoices 1.23\n"
 "Report-Msgid-Bugs-To: support@yoohooplugins.com\n"
 "Last-Translator: Yoohoo Plugins <support@yoohooplugins.com>\n"
 "Language-Team: Yoohoo Plugins <support@yoohooplugins.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-07-12T20:49:48+00:00\n"
+"POT-Creation-Date: 2024-11-06T18:37:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.8.1\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: pmpro-pdf-invoices\n"
 
 #. Plugin Name of the plugin
+#: pmpro-pdf-invoices.php
 msgid "Paid Memberships Pro - PDF Invoices"
 msgstr ""
 
 #. Plugin URI of the plugin
+#: pmpro-pdf-invoices.php
 msgid "https://yoohooplugins.com/plugins/pmpro-pdf-invoices/"
 msgstr ""
 
 #. Description of the plugin
+#: pmpro-pdf-invoices.php
 msgid "Generates PDF Invoices for Paid Memberships Pro Orders."
 msgstr ""
 
 #. Author of the plugin
+#: pmpro-pdf-invoices.php
 msgid "Yoohoo Plugins"
 msgstr ""
 
 #. Author URI of the plugin
+#: pmpro-pdf-invoices.php
 msgid "https://yoohooplugins.com"
 msgstr ""
 
@@ -226,6 +231,7 @@ msgstr ""
 #: includes/general-settings.php:344
 #: pmpro-pdf-invoices.php:772
 #: pmpro-pdf-invoices.php:805
+#: pmpro-pdf-invoices.php:832
 msgid "We detected that your installation is running on Nginx. To protect generated invoices that are stored on your web server, the following Nginx rule should be added to your Nginx WordPress installation config file."
 msgstr ""
 
@@ -373,6 +379,7 @@ msgstr ""
 #: pmpro-pdf-invoices.php:193
 #: pmpro-pdf-invoices.php:192
 #: pmpro-pdf-invoices.php:195
+#: pmpro-pdf-invoices.php:201
 msgid "Billing Details"
 msgstr ""
 
@@ -380,12 +387,14 @@ msgstr ""
 #: pmpro-pdf-invoices.php:218
 #: pmpro-pdf-invoices.php:205
 #: pmpro-pdf-invoices.php:208
+#: pmpro-pdf-invoices.php:217
 msgid "N/A"
 msgstr ""
 
 #: pmpro-pdf-invoices.php:320
 #: pmpro-pdf-invoices.php:337
 #: pmpro-pdf-invoices.php:340
+#: pmpro-pdf-invoices.php:367
 msgid "Invoice PDF"
 msgstr ""
 
@@ -395,6 +404,8 @@ msgstr ""
 #: pmpro-pdf-invoices.php:902
 #: pmpro-pdf-invoices.php:358
 #: pmpro-pdf-invoices.php:935
+#: pmpro-pdf-invoices.php:385
+#: pmpro-pdf-invoices.php:962
 msgid "Download PDF"
 msgstr ""
 
@@ -411,18 +422,22 @@ msgstr ""
 #: pmpro-pdf-invoices.php:642
 #: pmpro-pdf-invoices.php:628
 #: pmpro-pdf-invoices.php:646
+#: pmpro-pdf-invoices.php:655
+#: pmpro-pdf-invoices.php:673
 msgid "PDF Invoices"
 msgstr ""
 
 #: pmpro-pdf-invoices.php:626
 #: pmpro-pdf-invoices.php:643
 #: pmpro-pdf-invoices.php:647
+#: pmpro-pdf-invoices.php:674
 msgid "No PDF invoices found..."
 msgstr ""
 
 #: pmpro-pdf-invoices.php:639
 #: pmpro-pdf-invoices.php:656
 #: pmpro-pdf-invoices.php:658
+#: pmpro-pdf-invoices.php:685
 msgid "Download all PDF's as ZIP"
 msgstr ""
 
@@ -430,6 +445,7 @@ msgstr ""
 #: pmpro-pdf-invoices.php:798
 #: pmpro-pdf-invoices.php:771
 #: pmpro-pdf-invoices.php:804
+#: pmpro-pdf-invoices.php:831
 msgid "Paid Memberships Pro - PDF Invoices - Nginx Detected"
 msgstr ""
 
@@ -437,6 +453,7 @@ msgstr ""
 #: pmpro-pdf-invoices.php:807
 #: pmpro-pdf-invoices.php:780
 #: pmpro-pdf-invoices.php:813
+#: pmpro-pdf-invoices.php:840
 msgid "I've Added The Nginx Rule"
 msgstr ""
 
@@ -454,11 +471,13 @@ msgstr ""
 
 #: pmpro-pdf-invoices.php:589
 #: pmpro-pdf-invoices.php:593
+#: pmpro-pdf-invoices.php:620
 msgid "Please login to view your invoices."
 msgstr ""
 
 #: pmpro-pdf-invoices.php:922
 #: pmpro-pdf-invoices.php:956
+#: pmpro-pdf-invoices.php:983
 msgid "Nonce is invalid"
 msgstr ""
 
@@ -466,6 +485,8 @@ msgstr ""
 #: pmpro-pdf-invoices.php:1037
 #: pmpro-pdf-invoices.php:1012
 #: pmpro-pdf-invoices.php:1064
+#: pmpro-pdf-invoices.php:1039
+#: pmpro-pdf-invoices.php:1091
 msgid "%s your copy of PMPro PDF Invoices to receive access to automatic upgrades and support. Need a license key? %s"
 msgstr ""
 
@@ -473,6 +494,8 @@ msgstr ""
 #: pmpro-pdf-invoices.php:1037
 #: pmpro-pdf-invoices.php:1012
 #: pmpro-pdf-invoices.php:1064
+#: pmpro-pdf-invoices.php:1039
+#: pmpro-pdf-invoices.php:1091
 msgid "Register"
 msgstr ""
 
@@ -480,9 +503,12 @@ msgstr ""
 #: pmpro-pdf-invoices.php:1037
 #: pmpro-pdf-invoices.php:1012
 #: pmpro-pdf-invoices.php:1064
+#: pmpro-pdf-invoices.php:1039
+#: pmpro-pdf-invoices.php:1091
 msgid "Purchase one now."
 msgstr ""
 
 #: pmpro-pdf-invoices.php:360
+#: pmpro-pdf-invoices.php:387
 msgid "Generate PDF"
 msgstr ""
