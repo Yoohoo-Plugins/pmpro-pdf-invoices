@@ -234,17 +234,34 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 		'{{membership_level}}' => $order_level_name ?: '',
 		'{{membership_description}}' => $order_level->description ?: '',
 		'{{membership_level_confirmation_message}}' => $order_level->confirmation ?: '',
-		'{{billing_address}}' => $billing_details ?: '',
 		'{{payment_method}}' => $payment_method ?: '',
 		'{{total}}' => pmpro_formatPrice($order_data->total) ?: '',
 		'{{site}}' => get_bloginfo( 'sitename' ) ?: '',
+		'{{sitename}}' => get_bloginfo( 'sitename' ) ?: '',
 		'{{site_url}}' => esc_url( get_site_url() ) ?: '',
 		'{{subtotal}}' => pmpro_formatPrice( $order_data->subtotal ) ?: '',
 		'{{tax}}' => pmpro_formatPrice($order_data->tax) ?: '',
 		'{{ID}}' => $order_data->membership_id ?: '',
 		'{{invoice_date}}' => $date ?: '',
 		'{{logo_image}}' => $logo_image ?: '',
-		'{{admin_email}}' => get_bloginfo( 'admin_email' )
+		'{{admin_email}}' => get_bloginfo( 'admin_email' ),
+		'{{display_name}}' => $user->data->display_name ?: '',
+		'{{levels_url}}' => pmpro_url( 'levels' ) ?: '',
+		'{{billing_address}}' => $billing_details ?: '', // The formatted billing address.
+		'{{billing_name}}' => $order_data->billing->name ?: '',
+		'{{billing_street}}' => $order_data->billing->street ?: '',
+		'{{billing_street2}}' => $order_data->billing->street2 ?: '',
+		'{{billing_city}}' => $order_data->billing->city ?: '',
+		'{{billing_state}}' => $order_data->billing->state ?: '',
+		'{{billing_zip}}' => $order_data->billing->zip ?: '',
+		'{{billing_country}}' => $order_data->billing->country ?: '',
+		'{{billing_phone}}' => $order_data->billing->phone ?: '',
+		'{{order_link}}' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order_data->code ) ),
+		'{{order_url}}' => pmpro_login_url( pmpro_url( 'invoice', '?invoice=' . $order_data->code ) ),
+		'{{name}}' => $user->data->display_name ?: '',
+		'{{first_name}}' => $user->data->first_name ?: '',
+		'{{last_name}}' => $user->data->last_name ?: '',
+		'{{full_name}}' => $user->data->first_name . ' ' . $user->data->last_name ?: '',
 	);
 
 	//Additional replacements - Developer hook to add custom variable parse
@@ -623,7 +640,7 @@ function pmpropdf_download_list_shortcode_handler(){
 			$membership_level = $invoice->membership_level->name;
 
 			if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
-				$content = '<tr>';
+				$content  = '<tr>';
 				$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
 				$content .=		'<td>' . $membership_level . '</td>';
 				$content .=		'<td>' . pmpro_formatPrice($invoice->total) . '</td>';
@@ -652,11 +669,11 @@ function pmpropdf_download_list_shortcode_handler(){
 		return $table_content;
 
 	} else {
-		$content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
-		$content .= "<div><em>" . __("No PDF invoices found...", 'pmpro-pdf-invoices' ) . "</em></div>";
+		$content = "<h3>" . esc_html__( "PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
+		$content .= "<div><em>" . esc_html__( "No PDF invoices found...", 'pmpro-pdf-invoices' ) . "</em></div>";
 	}
 
-	return $content;
+	return wp_kses_post( $content );
 	}
 add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
 
