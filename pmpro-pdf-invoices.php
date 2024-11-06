@@ -5,9 +5,9 @@
  * Plugin URI: https://yoohooplugins.com/plugins/pmpro-pdf-invoices/
  * Author: Yoohoo Plugins
  * Author URI: https://yoohooplugins.com
- * Version: 1.22.1
- * License: GPL2 or later
- * Tested up to: 6.2
+ * Version: 1.23
+ * License: GPLv2 or later
+ * Tested up to: 6.7
  * Requires PHP: 7.2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: pmpro-pdf-invoices
@@ -190,7 +190,7 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 	$dompdf = new Dompdf( apply_filters( 'pmpropdf_dompdf_args', array( 'enable_remote' => true ) ) );
 	$body = pmpropdf_get_order_template_html();
 
-	// Build the string for billing data from the order object or $order_data array.
+	// Build the string for billing data from the order object or $order_data.
 	if ( ! empty( $order->billing->name ) ) {
 		$billing_details = "<p><strong>" . __( 'Billing Details', 'pmpro-pdf-invoices' ) . "</strong></p>";
 		$billing_details .= "<p>" . $order->billing->name . "<br>";
@@ -248,7 +248,7 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 		'{{admin_email}}' => get_bloginfo( 'admin_email' ),
 		'{{display_name}}' => $user->data->display_name ?: '',
 		'{{levels_url}}' => pmpro_url( 'levels' ) ?: '',
-		'{{billing_address}}' => $billing_details ?: '', // The formatted billing address.
+		'{{billing_address}}' => wp_kses_post( $billing_details ) ?: '', // The formatted billing address.
 		'{{billing_name}}' => $order_data->billing->name ?: '',
 		'{{billing_street}}' => $order_data->billing->street ?: '',
 		'{{billing_street2}}' => $order_data->billing->street2 ?: '',
