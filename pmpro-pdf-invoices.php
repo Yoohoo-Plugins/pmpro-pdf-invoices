@@ -232,6 +232,7 @@ function pmpropdf_generate_pdf($order_data, $return_dom_pdf = false){
 		'{{invoice_code}}' => $order_data->code ?: '',
 		'{{user_email}}' => $user->data->user_email ?: '',
 		'{{membership_level}}' => $order_level_name ?: '',
+		'{{membership_enddate}}' => pmpro_get_membership_expiration_text( $order_level, $user->ID ) ?: '',
 		'{{membership_description}}' => $order_level->description ?: '',
 		'{{membership_level_confirmation_message}}' => $order_level->confirmation ?: '',
 		'{{payment_method}}' => $payment_method ?: '',
