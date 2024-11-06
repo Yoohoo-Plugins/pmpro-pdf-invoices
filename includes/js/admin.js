@@ -17,7 +17,7 @@ jQuery(document).ready(function ($) {
         jQuery.ajax({
             url: ajaxurl,
             type: 'POST',
-            timeout: 2000,
+            timeout: 5000,
             dataType: 'html',
             data: data,
             error: function (xml) {
