@@ -37,7 +37,7 @@ if ( ! defined( 'YOOHOO_STORE' ) ) {
 	define( 'YOOHOO_STORE', 'https://yoohooplugins.com/edd-sl-api/' );
 }
 define( 'PMPRO_PDF_PLUGIN_ID', 2117 );
-define( 'PMPRO_PDF_VERSION', '1.22.1' );
+define( 'PMPRO_PDF_VERSION', '1.23' );
 define( 'PMPRO_PDF_DIR', dirname( __file__ ) );
 
 define( 'PMPRO_PDF_LOGO_URL', 'PMPRO_PDF_LOGO_URL');
@@ -630,8 +630,8 @@ function pmpropdf_download_list_shortcode_handler(){
 		IN('review', 'token', 'error')
 		ORDER BY timestamp DESC LIMIT " . $limit
 	);
-
 	if(!empty($invoices)){
+		$content = '';
 		foreach ($invoices as $key => $invoice) {
 			$invoice_id = $invoice->id;
 			$invoice = new MemberOrder;
@@ -639,34 +639,46 @@ function pmpropdf_download_list_shortcode_handler(){
 			$invoice->getMembershipLevel();
 
 			$membership_level = $invoice->membership_level->name;
-
+			
 			if ( file_exists( pmpropdf_get_invoice_directory_or_url() . pmpropdf_generate_invoice_name($invoice->code) ) ){
-				$content  = '<tr>';
+				$content .= '<tr>';
 				$content .=		'<td>' . date_i18n(get_option("date_format"), $invoice->timestamp) . '</td>';
 				$content .=		'<td>' . $membership_level . '</td>';
 				$content .=		'<td>' . pmpro_formatPrice($invoice->total) . '</td>';
 				$content .= 	'<td><a href="' . esc_url( admin_url( '?pmpropdf=' . $invoice->code ) ). '">' . pmpropdf_generate_invoice_name( $invoice->code ) .'</a></td>';
 				$content .= '</tr>';
 			}
+			
 		}
 	}
 
 	if(!empty($content)){
-		$table_content = "<h3>" . __("PDF Invoices", 'pmpro-pdf-invoices' ) . "</h3>";
-		$table_content .= "<table width='100%' cellpadding='0' cellspacing='0' border='0'>";
-		$table_content .= 	"<thead>";
-		$table_content .= 		"<tr>";
-		$table_content .= 			"<th>" . __("Date", 'paid-memberships-pro' ) . "</th>";
-		$table_content .= 			"<th>" . __("Level", 'paid-memberships-pro' ) . "</th>";
-		$table_content .= 			"<th>" . __("Amount", 'paid-memberships-pro' ) . "</th>";
-		$table_content .= 			"<th>" . __("Download", 'paid-memberships-pro' ) . "</th>";
-		$table_content .= 		"</tr>";
-		$table_content .= 	"</thead>";
-		$table_content .= 	"<tbody>";
-		$table_content .= 		$content;
-		$table_content .= 	"</tbody>";
-		$table_content .= "</table>";
-
+		ob_start();
+		?>
+		<div class="pmpro">
+			<section id="pmpro_account-pdfs" class="pmpro_section">
+				<h2 class="pmpro_section_title pmpro_font-x-large"><?php esc_html_e( "PDF Invoices", 'pmpro-pdf-invoices' ); ?></h3>
+				<div class="pmpro_card">
+					<div class="pmpro_card_content">
+						<table class="pmpro_table pmpro_table_orders">
+							<thead>
+								<tr>
+									<th><?php esc_html_e( "Date", 'pmpro-pdf-invoices' ); ?></th>
+									<th><?php esc_html_e( "Level", 'pmpro-pdf-invoices' ); ?></th>
+									<th><?php esc_html_e( "Amount", 'pmpro-pdf-invoices' ); ?></th>
+									<th><?php esc_html_e( "Download", 'pmpro-pdf-invoices' ); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php echo wp_kses_post( $content ); ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</section>
+		</div>
+		<?php
+		$table_content = ob_get_clean();
 		return $table_content;
 
 	} else {
@@ -674,9 +686,10 @@ function pmpropdf_download_list_shortcode_handler(){
 		$content .= "<div><em>" . esc_html__( "No PDF invoices found...", 'pmpro-pdf-invoices' ) . "</em></div>";
 	}
 
+	// If we make it here.
 	return wp_kses_post( $content );
-	}
-add_shortcode('pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler');
+}
+add_shortcode( 'pmpropdf_download_list', 'pmpropdf_download_list_shortcode_handler' );
 
 /**
  * Shortcode handler for the download all as ZIP file
